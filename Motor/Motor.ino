@@ -17,8 +17,8 @@ void setup()
 
   digital_outputs.setAll(0);
 
-  digital_outputs.setAll(motoreAvanti,LOW);
-  digital_outputs.setAll(motoreIndietro,LOW);
+  digital_outputs.set(motoreAvanti,LOW);
+  digital_outputs.set(motoreIndietro,LOW);
 
   if (!digital_inputs.init()) 
   {
@@ -28,12 +28,12 @@ void setup()
 
 void loop() 
 {
-  Marcia
+  Marcia();
 }
 
 void Marcia()
 {
-  int valorePuls=digital_inputs_read(pulsAvvio);
+  int valorePuls=digital_inputs.read(pulsAvvio);
   if(valorePuls==1 && ftcAvanti!=1)
   {
     digital_outputs.set(motoreAvanti,HIGH);
