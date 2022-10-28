@@ -64,5 +64,4 @@ void Marcia()
     digital_outputs.set(motoreIndietro,LOW);
     controllo=1;
   }
-  delay(20);
 }
