@@ -7,7 +7,10 @@ int pulsAvvio=DIN_READ_CH_PIN_00;
 int ftcAvanti=DIN_READ_CH_PIN_01;
 int ftcIndietro=DIN_READ_CH_PIN_02;
 int motoreAvanti=0;
-int motoreIndietro=0;
+int motoreIndietro=1;
+int statoAvanti=0;
+int statoIndietro=0;    
+int statoPulsante= 0; 
 
 
 void setup() 
@@ -34,8 +37,32 @@ void loop()
 void Marcia()
 {
   int valorePuls=digital_inputs.read(pulsAvvio);
-  if(valorePuls==1 && ftcAvanti!=1)
+  int valoreFotAvanti=digital_inputs.read(ftcAvanti);
+  int valoreFotIndietro=digital_inputs.read(ftcIndietro);
+  int controllo=0;
+
+  if(valorePuls != statoPulsante)
+  { 
+    if(valorePuls == 1 && controllo==0)
+    {
+      if(statoAvanti==0)
+        digital_outputs.set(motoreAvanti,HIGH);
+        statoAvanti=1;
+    }
+  }
+
+  if(statoAvanti==1 && valoreFotAvanti==0)
+  {
+    digital_outputs.set(motoreAvanti,LOW);
+    digital_outputs.set(motoreIndietro,HIGH);
+    controllo=1;
+  }
+
+  if(statoAvanti==1 && valoreFotIndietro==0)
   {
     digital_outputs.set(motoreAvanti,HIGH);
+    digital_outputs.set(motoreIndietro,LOW);
+    controllo=1;
   }
+  delay(20);
 }
