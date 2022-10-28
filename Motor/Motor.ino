@@ -54,14 +54,16 @@ void Marcia()
   if(statoAvanti==1 && valoreFotAvanti==0)
   {
     digital_outputs.set(motoreAvanti,LOW);
+    delay(1000);
     digital_outputs.set(motoreIndietro,HIGH);
     controllo=1;
   }
 
   if(statoAvanti==1 && valoreFotIndietro==0)
   {
-    digital_outputs.set(motoreAvanti,HIGH);
     digital_outputs.set(motoreIndietro,LOW);
+    delay(1000);
+    digital_outputs.set(motoreAvanti,HIGH);
     controllo=1;
   }
 }
