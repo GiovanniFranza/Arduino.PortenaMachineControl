@@ -9,6 +9,12 @@ int motore=0;
 int ledRosso=1;
 int ledVerde=2;
 int ledGiallo=3;
+int encoder=DIN_READ_CH_PIN_00;
+int contatore=0;
+int var1=0;
+int var2=0;
+int var3=0;
+
 void setup()
 {
   analogReadResolution(16);
@@ -20,49 +26,70 @@ void setup()
   digital_outputs.set(ledRosso,LOW);
   digital_outputs.set(ledVerde,LOW);
   digital_outputs.set(ledGiallo,LOW);
-  int encoder=DIN_READ_CH_PIN_00;
 
   if (!digital_inputs.init()) 
   {
     Serial.println("Digital input GPIO expander initialization fail!!");
   }
-
 }
 
 void loop() 
 {
-
   int letturaEncoder=digital_inputs.read(encoder);
-  Serial.println(letturaEncoder);
-
   digital_outputs.set(motore,HIGH);
   float raw_voltage_ch0 = analog_in.read(0);
   float voltage_ch0 = (raw_voltage_ch0 * reference) / 65535 / res_divider;
-  //Serial.println(voltage_ch0);
+  Serial.println(voltage_ch0);
   delay(100);
+  
+  //if(voltage_ch0<1.3)
+  //{
+    //contatore=contatore+1;
+  //}
+  //Serial.println(contatore);
 
-  if(voltage_ch0>=1.25&&voltage_ch0<=1.30)
+  if(voltage_ch0>=1.25 && voltage_ch0<=1.30) 
   {
-  digital_outputs.set(ledRosso,HIGH);
+    var1=1;
+  }
+  if(var1==1)
+  {
+    Serial.println("Rosso");
+    delay(1000);
+    Serial.println("------");
+    var1=0;
   }else
-  {
-  digital_outputs.set(ledRosso,LOW);
+  {    
+    Serial.println("------");
   }
 
-  if(voltage_ch0>=0.7&&voltage_ch0<=0.8)
+  if(voltage_ch0>=0.7 && voltage_ch0<=0.8)
   {
-  digital_outputs.set(ledVerde,HIGH);
+    var2=1;
+  }
+  if(var2==1)
+  {
+    Serial.println("Bianco");
+    delay(1000);
+    Serial.println("------");
+    var2=0;
   }else
-  {
-  digital_outputs.set(ledVerde,LOW);
+  {    
+    Serial.println("------");
   }
 
-  if(voltage_ch0>=1.38&&voltage_ch0<=1.40)
+  if(voltage_ch0>=1.38 && voltage_ch0<=1.40)
   {
-  digital_outputs.set(ledGiallo,HIGH);
-  }else
-  {
-  digital_outputs.set(ledGiallo,LOW);
+    var3=1;
   }
-
+  if(var3==1)
+  {
+    Serial.println("Blu");
+    delay(1000);
+    Serial.println("------");
+    var3=0;
+  }else
+  {    
+    Serial.println("------");
+  }
 }
