@@ -33,16 +33,25 @@ void loop()
   if(voltage_ch0>=1.25&&voltage_ch0<=1.30)
   {
   digital_outputs.set(ledRosso,HIGH);
+  }else
+  {
+  digital_outputs.set(ledRosso,LOW);
   }
 
   if(voltage_ch0>=0.7&&voltage_ch0<=0.8)
   {
   digital_outputs.set(ledVerde,HIGH);
+  }else
+  {
+  digital_outputs.set(ledVerde,LOW);
   }
 
   if(voltage_ch0>=1.38&&voltage_ch0<=1.40)
   {
   digital_outputs.set(ledGiallo,HIGH);
+  }else
+  {
+  digital_outputs.set(ledGiallo,LOW);
   }
-  
+
 }
