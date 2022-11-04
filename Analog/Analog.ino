@@ -48,6 +48,7 @@ void loop()
   //}
   //Serial.println(contatore);
 
+  /*
   if(voltage_ch0>=1.25 && voltage_ch0<=1.30) 
   {
     var1=1;
@@ -78,7 +79,7 @@ void loop()
     Serial.println("------");
   }
 
-  if(voltage_ch0>=1.38 && voltage_ch0<=1.40)
+  if(voltage_ch0>=1.38 && voltage_ch0<=1.42)
   {
     var3=1;
   }
@@ -92,4 +93,5 @@ void loop()
   {    
     Serial.println("------");
   }
+  */
 }
