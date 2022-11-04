@@ -42,14 +42,14 @@ void loop()
   if((raw_voltage_ch0==HIGH) && (conteggio==OFF))
   {
     conteggio=ON;
-    t0=mills();
-    Serial.println(Inizio);
+    t0=millis();
+    Serial.println("Inizio");
   }
 
   if((raw_voltage_ch0==LOW) && (conteggio==ON))
   {
     conteggio=OFF;
-    t=mills()-t0;
+    t=millis()-t0;
     Serial.println(t);
   }
 
