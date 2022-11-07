@@ -16,6 +16,8 @@ bool abilitazione;
 float sogliaRiferimento;
 float valMinimo;
 bool abilitazionePistoneBianco=false;
+bool prev_tasto;
+int valore;
 
 void setup()
 {
@@ -28,6 +30,7 @@ void setup()
   reference=3.3;
   res_divider=1.5;
   contatore=0;
+  valore=0;
   
   analogReadResolution(16);
   Serial.begin(9600);
@@ -54,8 +57,17 @@ void loop()
   float voltage_ch0 = (raw_voltage_ch0 * reference) / 65535 / res_divider;
   delay(100);
   
-  
-  if(!(voltage_ch0 >= 1.46 &&  voltage_ch0 <= 1.53))
+  valore=CheckColori(voltage_ch0);
+
+  if(valore==1)
+  {
+    digital_outputs.set(pistoneBianco,HIGH);
+  }
+
+int CheckColore(float valoreAnalogico)
+{
+  int valRitorno=0;
+  if(!(valoreAnalogico >= 1.46 &&  valoreAnalogico <= 1.53))
   {
     abilitazione=true;
   }
@@ -66,33 +78,26 @@ void loop()
 
   if(abilitazione)
   {
-    if(voltage_ch0<=valMinimo)
+    if(valoreAnalogico<=valMinimo)
     {
-      valMinimo=voltage_ch0;
+      valMinimo=valoreAnalogico;
     }
   }
-  if(valMinimo>=0.7 && valMinimo<=0.8)
+  if(valMinimo!=100 & abilitazione==false)
   {
-    Serial.println("Bianco");
-    abilitazionePistoneBianco=true;
+    if(valMinimo>=1.25 && valMinimo<=1.30) 
+    {
+      valRitorno=1;//Rosso
+    }
+    if(valMinimo>=0.7 && valMinimo<=0.8)
+    {
+      valRitorno=2; //Bianco
+    }
+    if(valMinimo>=1.38 && valMinimo<=1.42)
+    {
+      valRitorno=3;//Blue
+    }
+    valMinimo=100;
   }
-  else
-  {    
-    Serial.println("------");
-  }
-
-  if(abilitazionePistoneBianco && letturaFtc2==false)
-  {
-    delay(500);
-    digital_outputs.set(pistoneBianco,HIGH);
-    delay(1000);
-    digital_outputs.set(pistoneBianco,LOW);
-    abilitazionePistoneBianco=false;
-  }
-  else
-  {
-    digital_outputs.set(pistoneBianco,LOW);
-  }
-
-  valMinimo=100;
+  return valRitorno;
 }
