@@ -15,7 +15,7 @@ int ftc2=DIN_READ_CH_PIN_01;
 bool abilitazione;
 float sogliaRiferimento;
 float valMinimo;
-const bool abilitazionePistoneBianco=false;
+bool abilitazionePistoneBianco=false;
 
 void setup()
 {
@@ -46,6 +46,7 @@ void setup()
 void loop() 
 {
   int letturaEncoder=digital_inputs.read(encoder);
+  int letturaFtc2=digital_inputs.read(ftc2);
 
   digital_outputs.set(motore,HIGH);
   float raw_voltage_ch0 = analog_in.read(0);
@@ -79,11 +80,13 @@ void loop()
     Serial.println("------");
   }
 
-  if(abilitazionePistone && ftc2==OFF)
+  if(abilitazionePistoneBianco && letturaFtc2==false)
   {
+    delay(500);
     digital_outputs.set(pistoneBianco,HIGH);
     delay(1000);
     digital_outputs.set(pistoneBianco,LOW);
+    abilitazionePistoneBianco=false;
   }
   else
   {
