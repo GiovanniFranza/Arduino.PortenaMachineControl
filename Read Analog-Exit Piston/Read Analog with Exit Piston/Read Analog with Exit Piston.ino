@@ -4,15 +4,18 @@ using namespace machinecontrol;
 
 //float res_divider = 0.28057;
 
+int contatore;
 float res_divider;
 float reference;
 int motore;
 int compressore;
 int pistoneBianco;
 int encoder=DIN_READ_CH_PIN_00;
+int ftc2=DIN_READ_CH_PIN_01;
 bool abilitazione;
 float sogliaRiferimento;
 float valMinimo;
+const bool abilitazionePistoneBianco=false;
 
 void setup()
 {
@@ -24,6 +27,7 @@ void setup()
   pistoneBianco=2;
   reference=3.3;
   res_divider=1.5;
+  contatore=0;
   analogReadResolution(16);
   Serial.begin(9600);
   Wire.begin();
@@ -42,6 +46,7 @@ void setup()
 void loop() 
 {
   int letturaEncoder=digital_inputs.read(encoder);
+
   digital_outputs.set(motore,HIGH);
   float raw_voltage_ch0 = analog_in.read(0);
   float voltage_ch0 = (raw_voltage_ch0 * reference) / 65535 / res_divider;
@@ -51,7 +56,8 @@ void loop()
   if(!(voltage_ch0 >= 1.46 &&  voltage_ch0 <= 1.53))
   {
     abilitazione=true;
-  }else
+  }
+  else
   {
     abilitazione=false;
   }
@@ -66,13 +72,23 @@ void loop()
   if(valMinimo>=0.7 && valMinimo<=0.8)
   {
     Serial.println("Bianco");
-    digital_outputs.set(pistoneBianco,HIGH);
-
+    abilitazionePistoneBianco=true;
   }
   else
   {    
     Serial.println("------");
   }
-  valMinimo=100;
+
+  if(abilitazionePistone && ftc2==OFF)
+  {
+    digital_outputs.set(pistoneBianco,HIGH);
+    delay(1000);
+    digital_outputs.set(pistoneBianco,LOW);
   }
+  else
+  {
+    digital_outputs.set(pistoneBianco,LOW);
+  }
+
+  valMinimo=100;
 }
