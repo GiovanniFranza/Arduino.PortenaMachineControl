@@ -7,6 +7,8 @@ using namespace machinecontrol;
 float res_divider;
 float reference;
 int motore;
+int compressore;
+int pistoneBianco;
 int encoder=DIN_READ_CH_PIN_00;
 bool abilitazione;
 float sogliaRiferimento;
@@ -18,6 +20,8 @@ void setup()
   sogliaRiferimento=1.49;
   abilitazione=false;
   motore=0;
+  compressore=1;
+  pistoneBianco=2;
   reference=3.3;
   res_divider=1.5;
   analogReadResolution(16);
@@ -26,6 +30,8 @@ void setup()
   analog_in.set0_10V();
   digital_outputs.setAll(0);
   digital_outputs.set(motore,LOW);
+  digital_outputs.set(compressore,HIGH);
+  digital_outputs.set(pistoneBianco,LOW);
 
   if (!digital_inputs.init()) 
   {
@@ -57,34 +63,16 @@ void loop()
       valMinimo=voltage_ch0;
     }
   }
-
-  if(valMinimo!=100 & abilitazione==false)
+  if(valMinimo>=0.7 && valMinimo<=0.8)
   {
-    if(valMinimo>=1.25 && valMinimo<=1.30) 
-    {
-      Serial.println("Rosso");
-    }
-    else
-    {    
-      Serial.println("------");
-    }
-    if(valMinimo>=0.7 && valMinimo<=0.8)
-    {
-      Serial.println("Bianco");
-    }
-    else
-    {    
-      Serial.println("------");
-    }
+    Serial.println("Bianco");
+    digital_outputs.set(pistoneBianco,HIGH);
 
-    if(valMinimo>=1.38 && valMinimo<=1.42)
-    {
-      Serial.println("Blu");
-    }
-    else
-    {    
-      Serial.println("------");
-    }
-    valMinimo=100;
+  }
+  else
+  {    
+    Serial.println("------");
+  }
+  valMinimo=100;
   }
 }
