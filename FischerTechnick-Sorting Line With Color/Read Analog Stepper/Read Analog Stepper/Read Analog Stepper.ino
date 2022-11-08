@@ -32,7 +32,7 @@ void setup()
   contatore=0;
   valore=0;
   prev_tasto=1;
-  
+
   analogReadResolution(16);
   Serial.begin(9600);
   Wire.begin();
@@ -57,7 +57,6 @@ void loop()
   delay(100);
   
   valore=CheckColore(voltage_ch0);
-
   if(CheckFronte())
   {
     ExitPistone(valore);
@@ -100,7 +99,6 @@ int CheckColore(float valoreAnalogico)
     }
     valMinimo=100;
   }
-  Serial.println(valRitorno);
   return valRitorno;
   
 }
@@ -130,8 +128,6 @@ void ExitPistone(int colore)
   if(colore==2)
   {
     int letturaEncoder=digital_inputs.read(encoder);
-    Serial.print(letturaEncoder);
-    Serial.println(colore);
     if(letturaEncoder==5)
     {
       digital_outputs.set(pistoneBianco,HIGH);
