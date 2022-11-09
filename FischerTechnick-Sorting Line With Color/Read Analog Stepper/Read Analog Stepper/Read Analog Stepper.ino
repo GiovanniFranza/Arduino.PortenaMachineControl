@@ -18,6 +18,7 @@ float valMinimo;
 bool abilitazionePistoneBianco=false;
 int valore;
 bool prev_tasto;
+const int LETTURA_COLORE = 2;
 
 void setup()
 {
@@ -58,14 +59,16 @@ void loop()
   {
     case 1:
       AzionaMotore();
-      statoMacchina=2;
+      statoMacchina=LETTURA_COLORE;
       break;
-    case 2:  
+    case 2:
       valore=CheckColore(voltage_ch0);
-      statoMacchina=3;
+      if(valore!=0)
+        statoMacchina=3;
       break;
     case 3:
-      if(valore==2 && CheckFronte()==true)
+      Serial.println(valore);
+      if(valore==2)
       {
         ExitPistoneBianco();
       }
@@ -139,6 +142,7 @@ bool CheckFronte()
 
 void ExitPistoneBianco()
 {
+  /*
   int letturaEncoder=digital_inputs.read(encoder);
   if(letturaEncoder==2)
   {
@@ -147,5 +151,7 @@ void ExitPistoneBianco()
     delay(1000);
     digital_outputs.set(pistoneBianco,LOW);
     letturaEncoder=0;
-  }
+    }
+    */
+  Serial.print("Ciao");
 }
