@@ -3,7 +3,7 @@
 using namespace machinecontrol;
 
 //float res_divider = 0.28057;
-
+int statoMacchina;
 int contatore;
 float res_divider;
 float reference;
@@ -32,6 +32,7 @@ void setup()
   contatore=0;
   valore=0;
   prev_tasto=1;
+  statoMacchina=0;
 
   analogReadResolution(16);
   Serial.begin(9600);
@@ -50,20 +51,23 @@ void setup()
 
 void loop() 
 {
-
-  digital_outputs.set(motore,HIGH);
+  //digital_outputs.set(motore,HIGH);
   float raw_voltage_ch0 = analog_in.read(0);
   float voltage_ch0 = (raw_voltage_ch0 * reference) / 65535 / res_divider;
   delay(100);
   
-  valore=CheckColore(voltage_ch0);
-  if(CheckFronte())
+  //valore=CheckColore(voltage_ch0);
+
+  switch(statoMacchina)
   {
-    ExitPistone(valore);
+    case 0:
+      digital_outputs.set(motore,HIGH);
+      break;
+    default:
+      Serial.println("Ciao");
   }
 }
-
-
+/*
 int CheckColore(float valoreAnalogico)
 {
   int valRitorno=0;
@@ -122,18 +126,16 @@ bool CheckFronte()
   }
 }
 
-void ExitPistone(int colore)
+void ExitPistoneBianco(valore)
 {
-
-  if(colore==2)
+  int letturaEncoder=digital_inputs.read(encoder);
+  Serial.println(letturaEncoder);
+  if(letturaEncoder==2)
   {
-    int letturaEncoder=digital_inputs.read(encoder);
-    if(letturaEncoder==5)
-    {
-      digital_outputs.set(pistoneBianco,HIGH);
-      delay(1000);
-      digital_outputs.set(pistoneBianco,LOW);
-      letturaEncoder=0;
-    }
+    digital_outputs.set(pistoneBianco,HIGH);
+    delay(1000);
+    digital_outputs.set(pistoneBianco,LOW);
+    letturaEncoder=0;
   }
 }
+*/
