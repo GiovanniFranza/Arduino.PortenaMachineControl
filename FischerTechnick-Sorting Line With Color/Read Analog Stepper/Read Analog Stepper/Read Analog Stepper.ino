@@ -70,7 +70,10 @@ void loop()
       Serial.println(valore);
       if(valore==2)
       {
-        ExitPistoneBianco();
+        if(CheckFronte())
+        {
+          ExitPistoneBianco();
+        }
       }
       statoMacchina=1;
       break;
@@ -142,7 +145,6 @@ bool CheckFronte()
 
 void ExitPistoneBianco()
 {
-  /*
   int letturaEncoder=digital_inputs.read(encoder);
   if(letturaEncoder==2)
   {
@@ -151,7 +153,5 @@ void ExitPistoneBianco()
     delay(1000);
     digital_outputs.set(pistoneBianco,LOW);
     letturaEncoder=0;
-    }
-    */
-  Serial.print("Ciao");
+  }
 }
