@@ -25,9 +25,9 @@ void setup()
   valMinimo=100;
   sogliaRiferimento=1.49;
   abilitazione=false;
-  motore=0;
-  compressore=1;
-  pistoneBianco=2;
+  motore=0;//OUT
+  compressore=1;//OUT
+  pistoneBianco=2;//OUT
   reference=3.3;
   res_divider=1.5;
   contatore=0;
@@ -67,13 +67,9 @@ void loop()
         statoMacchina=3;
       break;
     case 3:
-      Serial.println(valore);
-      if(valore==2)
+      if(valore==2 && CheckFronte()==true)
       {
-        if(CheckFronte()==true)
-        {
-          ExitPistoneBianco();
-        }
+        ExitPistoneBianco();
       }
       statoMacchina=1;
       break;
@@ -128,7 +124,7 @@ bool CheckFronte()
 {
   int stato=0;
   int letturaFtc2=digital_inputs.read(ftc2);
-  if ((letturaFtc2 == HIGH) && (prev_tasto == HIGH))
+  if ((letturaFtc2 == LOW) && (prev_tasto == HIGH))
   {
     stato = 1 - stato;
   }
@@ -136,25 +132,27 @@ bool CheckFronte()
   if (stato == 1) 
   {
     return true;
+    Serial.println("FronteAttivo");
   } 
   else 
   {
+    Serial.println("FronteNonAttivo");
     return false; 
   }
 }
 
 void ExitPistoneBianco()
 {
+  /*
   int letturaEncoder=digital_inputs.read(encoder);
-  if(letturaEncoder==1)
+  Serial.println(letturaEncoder);
+  if(letturaEncoder==5)
   {
-    /*
-    Serial.print(letturaEncoder);
     digital_outputs.set(pistoneBianco,HIGH);
     delay(1000);
     digital_outputs.set(pistoneBianco,LOW);
     letturaEncoder=0;
-    */
-    Serial.println("pippo");
   }
+  */
+  Serial.println("pippo");
 }
