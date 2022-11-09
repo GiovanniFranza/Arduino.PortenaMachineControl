@@ -65,9 +65,9 @@ void loop()
       statoMacchina=3;
       break;
     case 3:
-      if(CheckFronte())
+      if(valore==2 && CheckFronte()==true)
       {
-        ExitPistoneBianco(valore);
+        ExitPistoneBianco();
       }
       statoMacchina=1;
       break;
@@ -137,17 +137,15 @@ bool CheckFronte()
   }
 }
 
-void ExitPistoneBianco(int valore)
+void ExitPistoneBianco()
 {
-  if(valore==0)
+  int letturaEncoder=digital_inputs.read(encoder);
+  if(letturaEncoder==2)
   {
-    int letturaEncoder=digital_inputs.read(encoder);
-    if(letturaEncoder==2)
-    {
-      digital_outputs.set(pistoneBianco,HIGH);
-      delay(1000);
-      digital_outputs.set(pistoneBianco,LOW);
-      letturaEncoder=0;
-    }
+    Serial.print(letturaEncoder);
+    digital_outputs.set(pistoneBianco,HIGH);
+    delay(1000);
+    digital_outputs.set(pistoneBianco,LOW);
+    letturaEncoder=0;
   }
 }
