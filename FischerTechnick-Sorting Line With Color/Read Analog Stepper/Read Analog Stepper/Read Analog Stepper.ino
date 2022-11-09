@@ -70,7 +70,7 @@ void loop()
       Serial.println(valore);
       if(valore==2)
       {
-        if(CheckFronte())
+        if(CheckFronte()==true)
         {
           ExitPistoneBianco();
         }
@@ -128,7 +128,7 @@ bool CheckFronte()
 {
   int stato=0;
   int letturaFtc2=digital_inputs.read(ftc2);
-  if ((letturaFtc2 == LOW) && (prev_tasto == HIGH))
+  if ((letturaFtc2 == HIGH) && (prev_tasto == HIGH))
   {
     stato = 1 - stato;
   }
@@ -146,12 +146,15 @@ bool CheckFronte()
 void ExitPistoneBianco()
 {
   int letturaEncoder=digital_inputs.read(encoder);
-  if(letturaEncoder==2)
+  if(letturaEncoder==1)
   {
+    /*
     Serial.print(letturaEncoder);
     digital_outputs.set(pistoneBianco,HIGH);
     delay(1000);
     digital_outputs.set(pistoneBianco,LOW);
     letturaEncoder=0;
+    */
+    Serial.println("pippo");
   }
 }
