@@ -18,6 +18,7 @@ float valMinimo;
 bool abilitazionePistoneBianco=false;
 int valore;
 int prev_tasto;
+bool pzPresente;
 
 void setup()
 {
@@ -33,7 +34,7 @@ void setup()
   valore=0;
   prev_tasto=1;
   statoMacchina=1;
-
+  pzPresente=false;
   analogReadResolution(16);
   Serial.begin(9600);
   Wire.begin();
@@ -53,7 +54,7 @@ void loop()
 {
   float raw_voltage_ch0 = analog_in.read(0);
   float voltage_ch0 = (raw_voltage_ch0 * reference) / 65535 / res_divider;
-  delay(100);
+  //delay(100);
   switch(statoMacchina)
   {
     case 1:
@@ -68,11 +69,23 @@ void loop()
     case 3:
       if(CheckFronte())
       {
-        if(valore==2)
+        pzPresente=true;
+      }
+
+      if(pzPresente==true)
+      {
+        int letturaEncoder=digital_inputs.read(encoder);
+        if(letturaEncoder==1)
         {
-          ExitPistoneBianco();
-          statoMacchina=1;
+          contatore++;
+          Serial.println(contatore);
         }
+      }
+      if(contatore==1 && valore==2)
+      {
+        ExitPistoneBianco();
+        pzPresente=false;
+        statoMacchina=1;
       }
       break;
   }
@@ -125,7 +138,7 @@ int CheckColore(float valoreAnalogico)
 bool CheckFronte()
 {
   int letturaFtc2=digital_inputs.read(ftc2);
-  delay(50);
+  //delay(50);
   if ((letturaFtc2 != prev_tasto) && letturaFtc2 == LOW)
   {
     Serial.println("FronteAttivo");
@@ -142,19 +155,8 @@ bool CheckFronte()
 
 void ExitPistoneBianco()
 {
-  int contatore=0;
-  int letturaEncoder=digital_inputs.read(encoder);
-  Serial.println(letturaEncoder);
-  if(letturaEncoder==1)
-  {
-    count++;
-    Serial.println(count);
-  }
-  if(count==5)
-  {
     digital_outputs.set(pistoneBianco,HIGH);
     delay(1000);
     digital_outputs.set(pistoneBianco,LOW);
-    count=0;
-  }
+    contatore=0;
 }
