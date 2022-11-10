@@ -60,6 +60,7 @@ void loop()
     case 1:
       AzionaMotore();
       statoMacchina=LETTURA_COLORE;
+      CheckFronte();
       break;
     case 2:
       valore=CheckColore(voltage_ch0);
@@ -120,25 +121,22 @@ int CheckColore(float valoreAnalogico)
   
 }
 
-bool CheckFronte()
+void CheckFronte()
 {
   int stato=0;
   int letturaFtc2=digital_inputs.read(ftc2);
-  if ((letturaFtc2 == LOW) && (prev_tasto == HIGH))
+  if (letturaFtc2 != prev_tasto)
   {
-    stato = 1 - stato;
+    if(letturaFtc2==LOW)
+    {
+      Serial.println("FronteAttivo");
+    }else
+    {
+      Serial.println("FronteNonAttivo");
+    }
+    delay(50);
   }
-  prev_tasto = letturaFtc2;
-  if (stato == 1) 
-  {
-    return true;
-    Serial.println("FronteAttivo");
-  } 
-  else 
-  {
-    Serial.println("FronteNonAttivo");
-    return false; 
-  }
+  prev_tasto=letturaFtc2;
 }
 
 void ExitPistoneBianco()
