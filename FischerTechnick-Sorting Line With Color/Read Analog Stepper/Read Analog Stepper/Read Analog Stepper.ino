@@ -59,7 +59,6 @@ void loop()
     case 1:
       AzionaMotore();
       statoMacchina=2;
-      CheckFronte();
       break;
     case 2:
       valore=CheckColore(voltage_ch0);
@@ -67,11 +66,14 @@ void loop()
         statoMacchina=3;
       break;
     case 3:
-      if(valore==2 && CheckFronte()==true)
+      if(CheckFronte())
       {
-        ExitPistoneBianco();
+        if(valore==2)
+        {
+          ExitPistoneBianco();
+          statoMacchina=1;
+        }
       }
-      statoMacchina=1;
       break;
   }
 }
