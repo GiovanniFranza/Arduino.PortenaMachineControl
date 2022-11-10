@@ -121,7 +121,7 @@ int CheckColore(float valoreAnalogico)
   
 }
 
-void CheckFronte()
+bool CheckFronte()
 {
   int stato=0;
   int letturaFtc2=digital_inputs.read(ftc2);
@@ -130,9 +130,12 @@ void CheckFronte()
     if(letturaFtc2==LOW)
     {
       Serial.println("FronteAttivo");
-    }else
+      return true;
+    }
+    else
     {
       Serial.println("FronteNonAttivo");
+      return false;
     }
     delay(50);
   }
