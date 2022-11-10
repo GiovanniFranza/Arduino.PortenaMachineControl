@@ -142,16 +142,19 @@ bool CheckFronte()
 
 void ExitPistoneBianco()
 {
-  /*
+  int contatore=0;
   int letturaEncoder=digital_inputs.read(encoder);
   Serial.println(letturaEncoder);
-  if(letturaEncoder==5)
+  if(letturaEncoder==1)
+  {
+    count++;
+    Serial.println(count);
+  }
+  if(count==5)
   {
     digital_outputs.set(pistoneBianco,HIGH);
     delay(1000);
     digital_outputs.set(pistoneBianco,LOW);
-    letturaEncoder=0;
+    count=0;
   }
-  */
-  Serial.println("pippo");
 }
