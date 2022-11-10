@@ -58,24 +58,21 @@ void loop()
   {
     case 1:
       AzionaMotore();
-      if(CheckFronte() == 1)
+      statoMacchina=2;
+      CheckFronte();
+      break;
+    case 2:
+      valore=CheckColore(voltage_ch0);
+      if(valore!=0)
+        statoMacchina=3;
+      break;
+    case 3:
+      if(valore==2 && CheckFronte()==true)
       {
-        Serial.println("Ciao");
+        ExitPistoneBianco();
       }
-      //statoMacchina=2;
-     // break;
-    //case 2:
-     // valore=CheckColore(voltage_ch0);
-      //if(valore!=0)
-       // statoMacchina=3;
-      //break;
-    //case 3:
-      //if(valore==2 && CheckFronte()==true)
-      //{
-        //ExitPistoneBianco();
-      //}
-      //statoMacchina=1;
-      //break;
+      statoMacchina=1;
+      break;
   }
 }
 
@@ -125,22 +122,20 @@ int CheckColore(float valoreAnalogico)
 
 bool CheckFronte()
 {
-  int stato=0;
   int letturaFtc2=digital_inputs.read(ftc2);
   delay(50);
-  if ((letturaFtc2 != prev_tasto))
+  if ((letturaFtc2 != prev_tasto) && letturaFtc2 == LOW)
   {
     Serial.println("FronteAttivo");
+    prev_tasto=letturaFtc2;
     return true;
   }
   else
   {
-      Serial.println("FronteNonAttivo");
-      return false;
+    Serial.println("FronteNonAttivo");
+    prev_tasto=letturaFtc2;
+    return false;
   }
-
-  delay(50);
-  prev_tasto=letturaFtc2;
 }
 
 void ExitPistoneBianco()
