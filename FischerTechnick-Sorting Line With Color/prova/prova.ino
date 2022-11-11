@@ -98,7 +98,7 @@ void Espulsione()
   //{
     digital_outputs.set(pistone,HIGH);
     Serial.println("PistoneFuori");
-    delay(500);
+    delay(100);
     digital_outputs.set(pistone,LOW);
     Serial.println("PistoneDentro");
 
