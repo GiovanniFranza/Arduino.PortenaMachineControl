@@ -16,10 +16,13 @@ int pistone=2;
 int statoMacchina;
 bool pezzoIn;
 bool abilitazione;
+int valore;
+int valMinimo;
 
 void setup() 
 {
-  
+  valMinimo=100;
+  valore=0;
   statoMacchina=1; 
   prev_Encoder=1;
   prev_FtcExit=1;
@@ -53,30 +56,41 @@ void loop()
       AzionamentoMotore();
       AzionamentoCompressore();
       statoMacchina=2;
-    break;
+      break;
     case 2:
+      valore=CheckColore(voltage_ch0);
+      Serial.println(valore);
+      if(valore!=0)
+        statoMacchina=3;
+      break;
+    case 3:
       if(CheckFronteExitEspulsione())
       {
         pezzoIn=true;
-        statoMacchina=3;
+        statoMacchina=4;
       }
-    break;
-    case 3:
+      break;
+    case 4:
       if(pezzoIn==true)
       {
         if(CheckFronteEncoder())
         {
-          if(count==1)
+          switch (valore)
           {
-            statoMacchina=4;
+            case 0:
+              if(count==1)
+              {
+                Espulsione();              
+                statoMacchina=1;
+              }
+              break;
           }
         }
       }
-    break;
-    case 4:
-      Espulsione();
-      statoMacchina=1;
-    break;
+    //case 5:
+      //Espulsione();
+      //statoMacchina=1;
+      //break;
   }
 }
 
@@ -98,11 +112,6 @@ void Espulsione()
     digital_outputs.set(pistone,LOW);
     Serial.println("PistoneDentro");
     count=0;
-}
-
-void Contatore()
-{
-    count++;
 }
 
 int CheckColore(float valoreAnalogico)
@@ -147,7 +156,6 @@ int CheckColore(float valoreAnalogico)
 
 bool CheckFronteExitEspulsione()
 {
-  Serial.println("AAA");
   int letturaFtcExit=digital_inputs.read(ftcEspulsione);
   if((letturaFtcExit !=prev_FtcExit) && letturaFtcExit==HIGH)
   {
@@ -170,7 +178,7 @@ bool CheckFronteEncoder()
   {
     Serial.println("FronteAttivoEncoder");
     prev_Encoder=letturaEncoder;
-    Contatore();
+    count++;
     return true;
   }
   else
