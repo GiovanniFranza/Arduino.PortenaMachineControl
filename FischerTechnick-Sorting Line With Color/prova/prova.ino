@@ -59,24 +59,20 @@ void loop()
   switch(statoMacchina)
   {
     case 1:
-      Serial.println("case1");
       AzionamentoMotore();
       AzionamentoCompressore();
       statoMacchina=2;
       break;
     case 2:
-      Serial.println("case2");
       raw_voltage_ch0 = analog_in.read(0);
       voltage_ch0 = (raw_voltage_ch0 * reference) / 65535 / res_divider;
       valore=CheckColore(voltage_ch0);
       if(valore!=0)
       {
-        Serial.println(valore);
         statoMacchina=3;
       }
       break;
     case 3:
-      Serial.println("case3");
       if(CheckFronteExitEspulsione())
         {
           pezzoIn=true;
@@ -84,30 +80,26 @@ void loop()
         }
       break;
     case 4:
-      Serial.println("case4");
       if(pezzoIn==true)
       {
         statoMacchina=5;
       }
       break;
     case 5:
-      Serial.println("case5");
       if(pezzoIn==true)
       {
         switch(valore)
         {
           case 1:
-            Serial.println("Rosso");
             if(CheckFronteEncoder())
             {
-              if(count==7)
+              if(count==9)
               {
                 statoMacchina=6;
               }
             }
             break;
           case 2:
-            Serial.println("Bianco");
             if(CheckFronteEncoder())
             {
               if(count==3)
@@ -117,17 +109,15 @@ void loop()
             }
             break;
           case 3:
-            Serial.println("Blu");
             if(CheckFronteEncoder())
             {
-              if(count==13)
+              if(count==15)
               {
                 statoMacchina=6;
               }
             }
             break;
           default:
-            Serial.println("Errore");
             statoMacchina=2;          
         }
       }
@@ -137,7 +127,6 @@ void loop()
       }
       break;
     case 6:
-      Serial.println("case6");
       Espulsione(valore);
       statoMacchina=2;
     break;
@@ -159,20 +148,23 @@ void Espulsione(int valore)
   switch (valore)
   {
     case 1:
-      digital_outputs.set(pistoneBianco,HIGH);
-      delay(500);
-      digital_outputs.set(pistoneBianco,LOW);
-      count=0;
-      break;
-      
-    case 2:
+      delay(50);
       digital_outputs.set(pistoneRosso,HIGH);
       delay(500);
       digital_outputs.set(pistoneRosso,LOW);
       count=0;
       break;
       
+    case 2:
+      delay(50);
+      digital_outputs.set(pistoneBianco,HIGH);
+      delay(500);
+      digital_outputs.set(pistoneBianco,LOW);
+      count=0;
+      break;
+      
     case 3:
+      delay(50);
       digital_outputs.set(pistoneBlu,HIGH);
       delay(500);
       digital_outputs.set(pistoneBlu,LOW);
