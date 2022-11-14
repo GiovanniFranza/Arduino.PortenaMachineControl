@@ -13,7 +13,9 @@ int prev_Contatore;
 int count;
 int motore=0;
 int compressore=1;
-int pistone=2;
+int pistoneBianco=2;
+int pistoneRosso=3;
+int pistoneBlu=4;
 int statoMacchina;
 bool pezzoIn;
 int conteggio;
@@ -136,7 +138,7 @@ void loop()
       break;
     case 6:
       Serial.println("case6");
-      Espulsione();
+      Espulsione(valore);
       statoMacchina=2;
     break;
   }
@@ -152,12 +154,31 @@ void AzionamentoCompressore()
   digital_outputs.set(compressore,HIGH);
 }
 
-void Espulsione()
+void Espulsione(int valore)
 {
-    digital_outputs.set(pistone,HIGH);
-    delay(500);
-    digital_outputs.set(pistone,LOW);
-    count=0;
+  switch (valore)
+  {
+    case 1:
+      digital_outputs.set(pistoneBianco,HIGH);
+      delay(500);
+      digital_outputs.set(pistoneBianco,LOW);
+      count=0;
+      break;
+      
+    case 2:
+      digital_outputs.set(pistoneRosso,HIGH);
+      delay(500);
+      digital_outputs.set(pistoneRosso,LOW);
+      count=0;
+      break;
+      
+    case 3:
+      digital_outputs.set(pistoneBlu,HIGH);
+      delay(500);
+      digital_outputs.set(pistoneBlu,LOW);
+      count=0;
+      break;
+  }
 }
 
 bool CheckFronteExitEspulsione()
