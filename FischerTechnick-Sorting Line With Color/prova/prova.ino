@@ -19,15 +19,21 @@ bool pezzoIn;
 int conteggio;
 float valMinimo;
 bool abilitazione;
+int valore;
+float raw_voltage_ch0;
+float voltage_ch0;
 
 void setup() 
 { 
+  raw_voltage_ch0=0;
+  voltage_ch0=0;
   valMinimo=100;
   statoMacchina=1; 
   prev_Encoder=1;
   prev_FtcExit=1;
   prev_Contatore=0;
   count=0;
+  valore=0;
 
   reference=3.3;
   res_divider=1.5;
@@ -48,37 +54,57 @@ void setup()
 
 void loop() 
 {
-  float raw_voltage_ch0 = analog_in.read(0);
-  float voltage_ch0 = (raw_voltage_ch0 * reference) / 65535 / res_divider;
-
   switch(statoMacchina)
   {
     case 1:
+      Serial.println("case1");
       AzionamentoMotore();
       AzionamentoCompressore();
       statoMacchina=2;
       break;
     case 2:
-      if(CheckFronteExitEspulsione())
+      Serial.println("case2");
+      raw_voltage_ch0 = analog_in.read(0);
+      voltage_ch0 = (raw_voltage_ch0 * reference) / 65535 / res_divider;
+      valore=CheckColore(voltage_ch0);
+      if(valore!=0)
       {
-        pezzoIn=true;
+        Serial.println(valore);
         statoMacchina=3;
       }
       break;
     case 3:
+      Serial.println("case3");
+      if(CheckFronteExitEspulsione())
+        {
+          pezzoIn=true;
+          statoMacchina=4;
+        }
+      break;
+    case 4:
+      Serial.println("case4");
       if(pezzoIn==true)
+      {
+        statoMacchina=5;
+      }
+      break;
+    case 5:
+      Serial.println("case5");
+      if(pezzoIn==true && valore==2)
       {
         if(CheckFronteEncoder())
         {
-          if(count==1)
+          if(count==3)
           {
-            statoMacchina=4;
+            statoMacchina=6;
           }
         }
       }
       break;
-    case 4:
+    case 6:
+      Serial.println("case6");
       Espulsione();
+      valore=0;
       statoMacchina=1;
     break;
   }
@@ -169,5 +195,4 @@ int CheckColore(float valoreAnalogico)
     valMinimo=100;
   }
   return valRitorno;
-  
 }
