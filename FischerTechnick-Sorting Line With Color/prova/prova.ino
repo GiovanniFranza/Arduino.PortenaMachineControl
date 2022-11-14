@@ -1,3 +1,4 @@
+
 #include <Arduino_MachineControl.h>
 #include <Wire.h>
 using namespace machinecontrol;
@@ -15,25 +16,26 @@ int compressore=1;
 int pistone=2;
 int statoMacchina;
 bool pezzoIn;
+int conteggio;
+float valMinimo;
 bool abilitazione;
-int valore;
-int valMinimo;
 
 void setup() 
-{
+{ 
   valMinimo=100;
-  valore=0;
   statoMacchina=1; 
   prev_Encoder=1;
   prev_FtcExit=1;
   prev_Contatore=0;
   count=0;
+
   reference=3.3;
   res_divider=1.5;
   abilitazione=false;
 
   analogReadResolution(16);
   analog_in.set0_10V();
+
   Serial.begin(9600);
   Wire.begin();
   
@@ -44,8 +46,7 @@ void setup()
   }
 }
 
-void loop()
-
+void loop() 
 {
   float raw_voltage_ch0 = analog_in.read(0);
   float voltage_ch0 = (raw_voltage_ch0 * reference) / 65535 / res_divider;
@@ -58,39 +59,28 @@ void loop()
       statoMacchina=2;
       break;
     case 2:
-      valore=CheckColore(voltage_ch0);
-      Serial.println(valore);
-      if(valore!=0)
-        statoMacchina=3;
-      break;
-    case 3:
       if(CheckFronteExitEspulsione())
       {
         pezzoIn=true;
-        statoMacchina=4;
+        statoMacchina=3;
       }
       break;
-    case 4:
+    case 3:
       if(pezzoIn==true)
       {
         if(CheckFronteEncoder())
         {
-          switch (valore)
+          if(count==1)
           {
-            case 0:
-              if(count==1)
-              {
-                Espulsione();              
-                statoMacchina=1;
-              }
-              break;
+            statoMacchina=4;
           }
         }
       }
-    //case 5:
-      //Espulsione();
-      //statoMacchina=1;
-      //break;
+      break;
+    case 4:
+      Espulsione();
+      statoMacchina=1;
+    break;
   }
 }
 
@@ -107,11 +97,40 @@ void AzionamentoCompressore()
 void Espulsione()
 {
     digital_outputs.set(pistone,HIGH);
-    Serial.println("PistoneFuori");
-    delay(100);
+    delay(500);
     digital_outputs.set(pistone,LOW);
-    Serial.println("PistoneDentro");
     count=0;
+}
+
+bool CheckFronteExitEspulsione()
+{
+  int letturaFtcExit=digital_inputs.read(ftcEspulsione);
+  if((letturaFtcExit !=prev_FtcExit) && letturaFtcExit==LOW)
+  {
+    prev_FtcExit=letturaFtcExit;
+    return true;
+  }
+  else
+  {
+    prev_FtcExit=letturaFtcExit;
+    return false;
+  }
+}
+
+bool CheckFronteEncoder()
+{
+  int letturaEncoder=digital_inputs.read(encoder);
+  if ((letturaEncoder != prev_Encoder) && letturaEncoder == HIGH)
+  {
+    prev_Encoder=letturaEncoder;
+    count++;
+    return true;
+  }
+  else
+  {
+    prev_Encoder=letturaEncoder;
+    return false;
+  }
 }
 
 int CheckColore(float valoreAnalogico)
@@ -151,40 +170,4 @@ int CheckColore(float valoreAnalogico)
   }
   return valRitorno;
   
-}
-
-
-bool CheckFronteExitEspulsione()
-{
-  int letturaFtcExit=digital_inputs.read(ftcEspulsione);
-  if((letturaFtcExit !=prev_FtcExit) && letturaFtcExit==HIGH)
-  {
-    Serial.println("FronteAttivoFtcExit");
-    prev_FtcExit=letturaFtcExit;
-    return true;
-  }
-  else
-  {
-    Serial.println("FronteNonAttivoFtcExit");
-    prev_FtcExit=letturaFtcExit;
-    return false;
-  }
-}
-
-bool CheckFronteEncoder()
-{
-  int letturaEncoder=digital_inputs.read(encoder);
-  if ((letturaEncoder != prev_Encoder) && letturaEncoder == HIGH)
-  {
-    Serial.println("FronteAttivoEncoder");
-    prev_Encoder=letturaEncoder;
-    count++;
-    return true;
-  }
-  else
-  {
-    Serial.println("FronteNonAttivoEncoder");
-    prev_Encoder=letturaEncoder;
-    return false;
-  }
 }
