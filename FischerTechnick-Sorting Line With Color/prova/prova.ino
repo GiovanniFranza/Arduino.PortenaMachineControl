@@ -99,12 +99,14 @@ void loop()
             statoMacchina=6;
           }
         }
+      }else
+      {
+        statoMacchina=1;
       }
       break;
     case 6:
       Serial.println("case6");
       Espulsione();
-      valore=0;
       statoMacchina=1;
     break;
   }
