@@ -90,24 +90,54 @@ void loop()
       break;
     case 5:
       Serial.println("case5");
-      if(pezzoIn==true && valore==2)
+      if(pezzoIn==true)
       {
-        if(CheckFronteEncoder())
+        switch(valore)
         {
-          if(count==3)
-          {
-            statoMacchina=6;
-          }
+          case 1:
+            Serial.println("Rosso");
+            if(CheckFronteEncoder())
+            {
+              if(count==7)
+              {
+                statoMacchina=6;
+              }
+            }
+            break;
+          case 2:
+            Serial.println("Bianco");
+            if(CheckFronteEncoder())
+            {
+              if(count==3)
+              {
+                statoMacchina=6;
+              }
+            }
+            break;
+          case 2:
+            Serial.println("Blu");
+            if(CheckFronteEncoder())
+            {
+              if(count==13)
+              {
+                statoMacchina=6;
+              }
+            }
+            break;
+          default:
+            Serial.println("Errore");
+            statoMacchina=2;          
         }
-      }else
+      }
+      else
       {
-        statoMacchina=1;
+        statoMacchina=2;
       }
       break;
     case 6:
       Serial.println("case6");
       Espulsione();
-      statoMacchina=1;
+      statoMacchina=2;
     break;
   }
 }
