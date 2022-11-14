@@ -114,7 +114,7 @@ void loop()
               }
             }
             break;
-          case 2:
+          case 3:
             Serial.println("Blu");
             if(CheckFronteEncoder())
             {
