@@ -1,5 +1,7 @@
 #include <Arduino_MachineControl.h>
 #include <Wire.h>
+//////
+#define LIMIT 2
 using namespace machinecontrol;
 
 float res_divider = 1.5;
@@ -12,15 +14,22 @@ int count;
 int motore=0;
 int compressore=1;
 int pistoneBianco=2;
+int pistoneRosso=3;
+int pistoneBlu=4;
 int statoMacchina;
-bool pezzoIn;
+bool pezzOutSensor;
+bool pezzoInEspulsione;
 int conteggio;
 float valMinimo;
 bool abilitazione;
 int valore;
 float raw_voltage_ch0;
 float voltage_ch0;
+int deleted;
 
+/////
+int queue[LIMIT];
+int tail = 0;      // Indice che mi indica da dove inserire
 
 void setup() 
 {
@@ -56,61 +65,97 @@ void loop()
   switch(statoMacchina)
   {
     case 1:
-      Serial.println("case1");
+    //Serial.println("case1");
       AzionamentoMotore();
       AzionamentoCompressore();
       statoMacchina=2;
       break;
     case 2:
-      Serial.println("case2");
+    //Serial.println("case2");
       raw_voltage_ch0 = analog_in.read(0);
       voltage_ch0 = (raw_voltage_ch0 * reference) / 65535 / res_divider;
       valore=CheckColore(voltage_ch0);
       if(valore!=0)
       {
+        enqueue(valore);
+        pezzOutSensor=true;
         statoMacchina=3;
       }
       break;
     case 3:
-      Serial.println("case3");
-      if(CheckFronteExitEspulsione())
-        {
-          pezzoIn=true;
-          statoMacchina=4;
-        }
-      break;
-    case 4:
-      Serial.println("case4");
-      if(pezzoIn==true)
+    //Serial.println("case3");
+    Serial.println(pezzOutSensor);
+      if(pezzOutSensor==true)
       {
-        statoMacchina=5;
-      }
-      break;
-    case 5:
-      Serial.println("case5");
-      if(valore==2)
-      {
-        if(pezzoIn==true)
-        {
-          if(CheckFronteEncoder())
-          {
-            if(count==3)
-            {
-              statoMacchina=6;
-            }       
-          }
-        }
-      }
-      else
+        statoMacchina=4;
+      }else
       {
         statoMacchina=2;
       }
       break;
-    case 6:
-      Serial.println("case6");
-      Espulsione(valore);
-      statoMacchina=2;
+    case 4:
+    //Serial.println("case4");
+      if(CheckFronteExitEspulsione())
+        {
+          //pezzOutSensor=false;
+          pezzoInEspulsione=true;
+          statoMacchina=5;
+        }
+        else
+        {
+          statoMacchina=2;
+        }
       break;
+    case 5:
+    //Serial.println("case5");
+      if(pezzoInEspulsione==true)
+      {
+        switch(valore)
+        {
+          case 1:
+            if(CheckFronteEncoder())
+            {
+              if(count==9)
+              {
+                statoMacchina=6;
+              }
+            }
+            break;
+          case 2:
+            if(CheckFronteEncoder())
+            {
+              if(count==3)
+              {
+                statoMacchina=6;
+              }
+            }
+            break;
+          case 3:
+            if(CheckFronteEncoder())
+            {
+              if(count==15)
+              {
+                statoMacchina=6;
+              }
+            }
+            break;
+          default:
+            statoMacchina=2;          
+        }
+      }
+      else
+      {
+        pezzoInEspulsione=false;
+        statoMacchina=2;
+      }
+      break;
+    case 6:
+    //Serial.println("case1");
+      int numero=dequeue();
+      Espulsione(numero);
+      pezzoInEspulsione=false;
+      statoMacchina=2;
+    break;
   }
 }
 
@@ -126,13 +171,31 @@ void AzionamentoCompressore()
 
 void Espulsione(int valore)
 {
-  if(valore==2)
+  switch (valore)
   {
+    case 1:
+      delay(50);
+      digital_outputs.set(pistoneRosso,HIGH);
+      delay(500);
+      digital_outputs.set(pistoneRosso,LOW);
+      count=0;
+      break;
+      
+    case 2:
       delay(50);
       digital_outputs.set(pistoneBianco,HIGH);
       delay(500);
       digital_outputs.set(pistoneBianco,LOW);
       count=0;
+      break;
+      
+    case 3:
+      delay(50);
+      digital_outputs.set(pistoneBlu,HIGH);
+      delay(500);
+      digital_outputs.set(pistoneBlu,LOW);
+      count=0;
+      break;
   }
 }
 
@@ -151,6 +214,7 @@ bool CheckFronteExitEspulsione()
   }
 }
 
+
 bool CheckFronteEncoder()
 {
   int letturaEncoder=digital_inputs.read(encoder);
@@ -166,6 +230,7 @@ bool CheckFronteEncoder()
     return false;
   }
 }
+
 
 int CheckColore(float valoreAnalogico)
 {
@@ -188,7 +253,7 @@ int CheckColore(float valoreAnalogico)
   }
   if(valMinimo!=100 & abilitazione==false)
   {
-    if(valMinimo>=1.25 && valMinimo<=1.30) 
+    if(valMinimo>=1.25 && valMinimo<=1.40) 
     {
       valRitorno=1;//Rosso
     }
@@ -203,4 +268,29 @@ int CheckColore(float valoreAnalogico)
     valMinimo=100;
   }
   return valRitorno;
+}
+
+bool enqueue(int nuovoElemento) 
+{
+  if (tail == LIMIT)
+    return false;               // Overflow
+
+  queue[tail] = nuovoElemento;
+  tail++;
+  return true;
+}
+
+int dequeue() 
+{
+  if(tail == 0)
+  return -1;               // Underflow
+
+  deleted = queue[0];
+
+    // Cambio gli indici degli elementi
+  for(int i = 0; i < tail-1; i++)
+      queue[i] = queue[i+1];
+
+  tail--;
+  return deleted;
 }
