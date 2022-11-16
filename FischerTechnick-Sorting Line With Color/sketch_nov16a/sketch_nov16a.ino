@@ -52,7 +52,7 @@ void loop()
   raw_voltage_ch0 = analog_in.read(0);
   voltage_ch0 = (raw_voltage_ch0 * reference) / 65535 / res_divider;
   valore=CheckColore(voltage_ch0);
-  while(tail==LIMIT)
+  while(tail!=3)
   {
     Serial.println(tail);
     if(valore!=0)
