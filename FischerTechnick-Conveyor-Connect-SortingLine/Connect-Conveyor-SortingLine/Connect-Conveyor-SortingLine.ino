@@ -28,6 +28,7 @@ float raw_voltage_ch0;
 float voltage_ch0;
 float valMinimo;
 bool abilitazione;
+bool letturaFtc2NastroA;//Questa è una variabile globale
 
 void setup() 
 {
@@ -39,6 +40,7 @@ void setup()
   voltage_ch0=0;
   valMinimo=100;
   abilitazione=false;
+  letturaFtc2NastroA=false;
 
   analogReadResolution(16);
   analog_in.set0_10V();
@@ -53,7 +55,59 @@ void setup()
   }
 }
 
-void loop() {
-  // put your main code here, to run repeatedly:
+void loop() 
+{
+  NastroA();
+}
 
+void NastroA()
+{
+  //TUTTE LE FUNZIONI NASTROA 
+  MarciaNastroA();
+}
+
+void NastroB()
+{
+  //TUTTE LE FUNZIONE NASTROB
+}
+
+void MarciaNastroA()
+{
+  //VARIABILI CHE SERVONO ALLA FUNZIONE
+  bool letturaFtc1NastroA=digital_inputs.read(ftc1NastroA);
+  letturaFtc2NastroA=digital_inputs.read(ftc2NastroA);
+
+  if(letturaFtc1NastroA)
+  {
+    delay(1000);
+    digital_outputs.set(motore1NastroA,HIGH);
+  }
+  else
+  {
+    Serial.println("Inserire Pezzo in Ingresso");
+  }
+
+  if(letturaFtc2NastroB)
+  {
+    digital_outputs.set(motore2NastroB,HIGH);
+  }
+  else
+  {
+    Serial.println("Il Pezzo non è uscito")
+  }
+}
+
+void MarciaNastroB()
+{
+  //VARIABILI CHE SERVONO ALLA FUNZIONE
+  bool letturaFtc3NastroB=digital_inputs.read(ftc3NastroB);
+
+  if(letturaFtc3NastroB == 1 && letturaFtc2NastroA==0)
+  {
+    digital_outputs.set(motore1NastroA,LOW);
+  }
+  else
+  {
+    Serial.println("Il Pezzo non è ancora arrivato al NastroB");
+  }
 }
