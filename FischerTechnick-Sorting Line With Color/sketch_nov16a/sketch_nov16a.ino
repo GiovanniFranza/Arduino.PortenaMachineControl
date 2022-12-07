@@ -1,6 +1,7 @@
 #include <Arduino_MachineControl.h>
 #include <Wire.h>
-#define LIMIT 3
+//#define LIMIT 3
+#define LIMIT 10
 using namespace machinecontrol;
 
 float res_divider = 1.5;
@@ -18,9 +19,9 @@ int valore;
 float raw_voltage_ch0;
 float voltage_ch0;
 int deleted;
-int queue[LIMIT];
-int tail = 0;      // Indice che mi indica da dove inserire
-
+//int queue[LIMIT];
+int indice = 0;      // Indice che mi indica da dove inserire
+int vettore[LIMIT];
 void setup() 
 {
   raw_voltage_ch0=0;
@@ -52,26 +53,40 @@ void loop()
   raw_voltage_ch0 = analog_in.read(0);
   voltage_ch0 = (raw_voltage_ch0 * reference) / 65535 / res_divider;
   valore=CheckColore(voltage_ch0);
-  while(tail!=3)
+  if(indice != LIMIT)
   {
-    Serial.println(tail);
-    if(valore!=0)
+    if (valore!=0)
     {
-      enqueue(valore);
-      printQueue();
+      vettore[indice] = valore;
+      indice++;
     }
   }
-  pippo=1;
 
-  if(pippo==1)
+  if(valore!=0)
   {
-    delay(2500);
-    int numero=dequeue();
-    Serial.println(numero);
-    printQueue();
+    Serial.println("");
+    for(int i=0; i<LIMIT;i++)
+    {
+      Serial.print(vettore[i]);
+    }
   }
 }
 
+
+int dequeue() 
+{
+    if(indice == 0)
+    return -1;               // Underflow
+
+    deleted = vettore[0];
+
+      // Cambio gli indici degli elementi
+    for(int i = 0; i < indice-1; i++)
+        vettore[i] = vettore[i+1];
+
+    indice--;
+    return deleted;
+}
 
 void AzionamentoMotore()
 {
@@ -109,31 +124,6 @@ void Espulsione(int valore)
       digital_outputs.set(pistoneBlu,LOW);
       break;
   }
-}
-
-void printQueue() 
-{
-    if (tail == 0)
-        Serial.println("Coda vuota!");
-
-    else{
-        Serial.print("\t(exit) ← ");
-        for (int i = 0; i <= tail-1; i++)
-            Serial.print(queue[ i ]);
-
-        //Serial.println("Coda piena!\n\n");
-        Serial.println("← (entry)");
-    }
-}
-
-bool enqueue(int nuovoElemento) 
-{
-  if (tail == LIMIT)
-    return false;               // Overflow
-
-  queue[tail] = nuovoElemento;
-  tail++;
-  return true;
 }
 
 int CheckColore(float valoreAnalogico)
@@ -174,6 +164,34 @@ int CheckColore(float valoreAnalogico)
   return valRitorno;
 }
 
+
+/*
+void printQueue() 
+{
+    if (tail == 0)
+        Serial.println("Coda vuota!");
+
+    else{
+        Serial.print("\t(exit) ← ");
+        for (int i = 0; i <= tail-1; i++)
+            Serial.print(queue[ i ]);
+
+        //Serial.println("Coda piena!\n\n");
+        Serial.println("← (entry)");
+    }
+}
+
+bool enqueue(int nuovoElemento) 
+{
+  if (tail == LIMIT)
+    return false;               // Overflow
+
+  queue[tail] = nuovoElemento;
+  tail++;
+  return true;
+}
+
+
 int dequeue() 
 {
   if(tail == 0)
@@ -188,3 +206,4 @@ int dequeue()
   tail--;
   return deleted;
 }
+*/

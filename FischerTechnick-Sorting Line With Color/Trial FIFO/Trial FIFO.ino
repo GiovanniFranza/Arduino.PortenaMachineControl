@@ -94,7 +94,7 @@ void loop()
       }
       break;
     case 4:
-    //Serial.println("case4");
+    Serial.println("case4");
       if(CheckFronteExitEspulsione())
         {
           //pezzOutSensor=false;
@@ -107,7 +107,7 @@ void loop()
         }
       break;
     case 5:
-    //Serial.println("case5");
+    Serial.println("case5");
       if(pezzoInEspulsione==true)
       {
         switch(valore)
@@ -150,7 +150,7 @@ void loop()
       }
       break;
     case 6:
-    //Serial.println("case1");
+    Serial.println("case1");
       int numero=dequeue();
       Espulsione(numero);
       pezzoInEspulsione=false;
