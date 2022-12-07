@@ -175,25 +175,25 @@ void Espulsione(int codiceColore)
   {
     case 1:
       delay(50);
-      digital_outputs.set(pistoneRosso,HIGH);
+      digital_outputs.set(pistoneRossoNastroB,HIGH);
       delay(500);
-      digital_outputs.set(pistoneRosso,LOW);
+      digital_outputs.set(pistoneRossoNastroB,LOW);
       count=0;
       break;
       
     case 2:
       delay(50);
-      digital_outputs.set(pistoneBianco,HIGH);
+      digital_outputs.set(pistoneBiancoNastroB,HIGH);
       delay(500);
-      digital_outputs.set(pistoneBianco,LOW);
+      digital_outputs.set(pistoneBiancoNastroB,LOW);
       count=0;
       break;
       
     case 3:
       delay(50);
-      digital_outputs.set(pistoneBlu,HIGH);
+      digital_outputs.set(pistoneBluNastroB,HIGH);
       delay(500);
-      digital_outputs.set(pistoneBlu,LOW);
+      digital_outputs.set(pistoneBluNastroB,LOW);
       count=0;
       break;
   }
