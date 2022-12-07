@@ -3,6 +3,10 @@
 
 using namespace machinecontrol;
 
+//Enumerazione
+enum valori {Bianco, Rosso, Blu};
+enum valori valore;
+
 //DICHIARAZIONI VARIABILI
 
 //INGRESSI
@@ -58,8 +62,14 @@ void setup()
 
 void loop() 
 {
+  AzionamentoCompressore();
   NastroA();
   NastroB();
+}
+
+void AzionamentoCompressore()
+{
+  digital_outputs.set(compressore,HIGH);
 }
 
 void NastroA()
@@ -72,9 +82,12 @@ void NastroB()
 {
   //TUTTE LE FUNZIONE NASTROB
   MarciaNastroB();
+
   raw_voltage_ch0 = analog_in.read(0);
   voltage_ch0 = (raw_voltage_ch0 * reference) / 65535 / res_divider;
-  valoreLettoColore=LetturaColoreNastroB(voltage_ch0);
+  valore=LetturaColoreNastroB(voltage_ch0);
+  
+  Espulsione(valore);
 }
 
 void MarciaNastroA()
@@ -93,13 +106,13 @@ void MarciaNastroA()
     Serial.println("Inserire Pezzo in Ingresso");
   }
 
-  if(letturaFtc2NastroB)
+  if(letturaFtc2NastroA)
   {
     digital_outputs.set(motore2NastroB,HIGH);
   }
   else
   {
-    Serial.println("Il Pezzo non è uscito")
+    Serial.println("Il Pezzo non è uscito");
   }
 }
 
@@ -154,4 +167,34 @@ int LetturaColoreNastroB(float valoreAnalogico)
     valMinimo=100;
   }
   return valRitorno;
+}
+
+void Espulsione(int codiceColore)
+{
+  switch (codiceColore)
+  {
+    case 1:
+      delay(50);
+      digital_outputs.set(pistoneRosso,HIGH);
+      delay(500);
+      digital_outputs.set(pistoneRosso,LOW);
+      count=0;
+      break;
+      
+    case 2:
+      delay(50);
+      digital_outputs.set(pistoneBianco,HIGH);
+      delay(500);
+      digital_outputs.set(pistoneBianco,LOW);
+      count=0;
+      break;
+      
+    case 3:
+      delay(50);
+      digital_outputs.set(pistoneBlu,HIGH);
+      delay(500);
+      digital_outputs.set(pistoneBlu,LOW);
+      count=0;
+      break;
+  }
 }
