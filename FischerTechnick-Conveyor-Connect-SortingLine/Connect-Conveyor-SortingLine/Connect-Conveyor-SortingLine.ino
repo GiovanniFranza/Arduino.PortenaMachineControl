@@ -8,7 +8,7 @@ using namespace machinecontrol;
 //INGRESSI
 int encoder1NastroA=DIN_READ_CH_PIN_00;
 int ftc1NastroA=DIN_READ_CH_PIN_01;
-int ftc2NastroB=DIN_READ_CH_PIN_02;
+int ftc2NastroA=DIN_READ_CH_PIN_02;
 int encoder2NastroB=DIN_READ_CH_PIN_03;
 int ftc3NastroB=DIN_READ_CH_PIN_04;
 int ftc4NastroB=DIN_READ_CH_PIN_05;
@@ -22,13 +22,14 @@ int pistoneRossoNastroB=4;
 int pistoneBluNastroB=5;
 
 //VARIABILI
-float res_divder;
+float res_divider;
 float reference;
 float raw_voltage_ch0;
 float voltage_ch0;
 float valMinimo;
 bool abilitazione;
-bool letturaFtc2NastroA;//Questa è una variabile globale
+bool letturaFtc2NastroA;
+int valoreLettoColore;
 
 void setup() 
 {
@@ -58,6 +59,7 @@ void setup()
 void loop() 
 {
   NastroA();
+  NastroB();
 }
 
 void NastroA()
@@ -69,6 +71,10 @@ void NastroA()
 void NastroB()
 {
   //TUTTE LE FUNZIONE NASTROB
+  MarciaNastroB();
+  raw_voltage_ch0 = analog_in.read(0);
+  voltage_ch0 = (raw_voltage_ch0 * reference) / 65535 / res_divider;
+  valoreLettoColore=LetturaColoreNastroB(voltage_ch0);
 }
 
 void MarciaNastroA()
@@ -110,4 +116,42 @@ void MarciaNastroB()
   {
     Serial.println("Il Pezzo non è ancora arrivato al NastroB");
   }
+}
+
+int LetturaColoreNastroB(float valoreAnalogico)
+{
+  int valRitorno=0;
+  if(!(valoreAnalogico >= 1.46 &&  valoreAnalogico <= 1.53))
+  {
+    abilitazione=true;
+  }
+  else
+  {
+    abilitazione=false;
+  }
+
+  if(abilitazione)
+  {
+    if(valoreAnalogico<=valMinimo)
+    {
+      valMinimo=valoreAnalogico;
+    }
+  }
+  if(valMinimo!=100 & abilitazione==false)
+  {
+    if(valMinimo>=1.25 && valMinimo<=1.40) 
+    {
+      valRitorno=1;//Rosso
+    }
+    if(valMinimo>=0.7 && valMinimo<=0.8)
+    {
+      valRitorno=2; //Bianco
+    }
+    if(valMinimo>=1.38 && valMinimo<=1.42)
+    {
+      valRitorno=3;//Blue
+    }
+    valMinimo=100;
+  }
+  return valRitorno;
 }
