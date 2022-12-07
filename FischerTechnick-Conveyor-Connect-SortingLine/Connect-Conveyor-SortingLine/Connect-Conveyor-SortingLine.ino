@@ -3,10 +3,6 @@
 
 using namespace machinecontrol;
 
-//Enumerazione
-enum valori {Bianco, Rosso, Blu};
-enum valori valore;
-
 //DICHIARAZIONI VARIABILI
 
 //INGRESSI
@@ -34,6 +30,8 @@ float valMinimo;
 bool abilitazione;
 bool letturaFtc2NastroA;
 int valoreLettoColore;
+bool valorePrecedenteEncoder2NastroB;
+int count;
 
 void setup() 
 {
@@ -46,6 +44,7 @@ void setup()
   valMinimo=100;
   abilitazione=false;
   letturaFtc2NastroA=false;
+  count=0;
 
   analogReadResolution(16);
   analog_in.set0_10V();
@@ -69,7 +68,7 @@ void loop()
 
 void AzionamentoCompressore()
 {
-  digital_outputs.set(compressore,HIGH);
+  digital_outputs.set(compressoreNastroB,HIGH);
 }
 
 void NastroA()
@@ -85,9 +84,9 @@ void NastroB()
 
   raw_voltage_ch0 = analog_in.read(0);
   voltage_ch0 = (raw_voltage_ch0 * reference) / 65535 / res_divider;
-  valore=LetturaColoreNastroB(voltage_ch0);
-  
-  Espulsione(valore);
+  valoreLettoColore=LetturaColoreNastroB(voltage_ch0);
+
+  Espulsione(valoreLettoColore);
 }
 
 void MarciaNastroA()
@@ -134,6 +133,7 @@ void MarciaNastroB()
 int LetturaColoreNastroB(float valoreAnalogico)
 {
   int valRitorno=0;
+
   if(!(valoreAnalogico >= 1.46 &&  valoreAnalogico <= 1.53))
   {
     abilitazione=true;
@@ -197,4 +197,23 @@ void Espulsione(int codiceColore)
       count=0;
       break;
   }
+}
+
+bool Conteggio()
+{
+  bool letturaEncoder2NastroB=!digital_inputs.read(encoder2NastroB);
+
+  if(letturaEncoder2NastroB && !valorePrecedenteEncoder2NastroB)
+  {
+    count++;
+    return true;
+  }
+  else
+  {
+    if(!letturaEncoder2NastroB && valorePrecedenteEncoder2NastroB)
+    {
+      return false;
+    }
+  }
+  valorePrecedenteEncoder2NastroB=letturaEncoder2NastroB;
 }
