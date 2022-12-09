@@ -30,6 +30,8 @@ float valMinimo;
 bool abilitazione;
 bool letturaFtc2NastroA;
 int valoreLettoColore;
+bool valorePrecedenteFtc1NastroA;
+bool valorePrecedenteFtc2NastroA;
 bool valorePrecedenteEncoder2NastroB;
 bool valorePrecedenteFtc4NastroB;
 int count;
@@ -47,7 +49,7 @@ void setup()
   voltage_ch0=0;
   valMinimo=100;
   abilitazione=false;
-  letturaFtc2NastroA=false;
+  letturaFtc2NastroA;
   count=0;
   faseNastroB=0;
 
@@ -165,27 +167,36 @@ void NastroB()
 void MarciaNastroA()
 {
   //VARIABILI CHE SERVONO ALLA FUNZIONE
-  bool letturaFtc1NastroA=digital_inputs.read(ftc1NastroA);
-  letturaFtc2NastroA=digital_inputs.read(ftc2NastroA);
+  bool letturaFtc1NastroA=!digital_inputs.read(ftc1NastroA);
+  letturaFtc2NastroA=!digital_inputs.read(ftc2NastroA);
 
-  if(letturaFtc1NastroA)
+  if(letturaFtc1NastroA && !valorePrecedenteFtc1NastroA)
   {
-    delay(1000);
+    delay(1000);//fare il fronte
     digital_outputs.set(motore1NastroA,HIGH);
   }
   else
   {
-    Serial.println("Inserire Pezzo in Ingresso");
+    if(!letturaFtc1NastroA && valorePrecedenteFtc1NastroA)
+    {
+      Serial.println("Inserire Pezzo in Ingresso");
+    }
   }
 
-  if(letturaFtc2NastroA)
+  valorePrecedenteFtc1NastroA=letturaFtc1NastroA
+
+  if(letturaFtc2NastroA && !valorePrecedenteFtc2NastroA)
   {
     digital_outputs.set(motore2NastroB,HIGH);
   }
   else
   {
-    Serial.println("Il Pezzo non è uscito");
+    if(!etturaFtc2NastroA && valorePrecedenteFtc2NastroA)
+    {
+      Serial.println("Il Pezzo non è uscito");
+    }
   }
+  valorePrecedenteFtc2NastroA=etturaFtc2NastroA;
 }
 
 void MarciaNastroB()
