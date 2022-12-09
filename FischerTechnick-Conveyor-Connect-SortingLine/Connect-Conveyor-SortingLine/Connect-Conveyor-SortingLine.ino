@@ -52,6 +52,7 @@ void setup()
   letturaFtc2NastroA;
   count=0;
   faseNastroB=1;
+  valoreLettoColore=0;
 
   analogReadResolution(16);
   analog_in.set0_10V();
@@ -92,33 +93,33 @@ void NastroB()
   switch(faseNastroB)
   {
     case 1:
+    Serial.println("FASE1");
       raw_voltage_ch0 = analog_in.read(0);
       voltage_ch0 = (raw_voltage_ch0 * reference) / 65535 / res_divider;
       valoreLettoColore=LetturaColoreNastroB(voltage_ch0);
-      Serial.println(valoreLettoColore);
       if(valoreLettoColore!=0)
       {
         pezzoOutSensorColor=true;
         faseNastroB=2;
       }
-    break;
+      break;
     case 2:
+    Serial.println("FASE2");
       if(pezzoOutSensorColor==true)
       {
         //pezzoProntoEsplusione=PresenzaPezzo();
-        faseNastroB=4;
+        faseNastroB=3;
       }
       else
       {
         faseNastroB=1;
       }
-    break;
-      /*    
+      break;    
     case 3:
+    Serial.println("FASE3");
       if(PresenzaPezzo())
       {
         pezzoProntoEsplusione=true;
-        pezzoOutSensorColor=false;
         faseNastroB=4;
       }
       else
@@ -126,9 +127,9 @@ void NastroB()
         faseNastroB=1;
       }
       break;
-      */
     case 4:
-        if(PresenzaPezzo())
+    Serial.println("FASE4");
+        if(pezzoProntoEsplusione==true)
         {
           switch(valoreLettoColore)
           {
@@ -136,21 +137,21 @@ void NastroB()
               if(Conteggio())
               {   
                 Serial.println(count);
-                if(count==3)
-                {
-                  faseNastroB=5;
-                }
-              }
-            break;
-            case 2:
-              if(Conteggio())
-              {
                 if(count==9)
                 {
                   faseNastroB=5;
                 }
               }
-            break;
+              break;
+            case 2:
+              if(Conteggio())
+              {
+                if(count==3)
+                {
+                  faseNastroB=5;
+                }
+              }
+              break;
             case 3:
               if(Conteggio())
               {
@@ -159,7 +160,7 @@ void NastroB()
                   faseNastroB=5;
                 }
               }
-          break;
+            break;
           default:
             faseNastroB=1;
           }
@@ -169,12 +170,14 @@ void NastroB()
           pezzoProntoEsplusione=false;
           faseNastroB=1;
         }
-    break;
+      break;
     case 5:
+    Serial.println("FASE5");
       Espulsione(valoreLettoColore);
         pezzoProntoEsplusione=false;
+        pezzoOutSensorColor=false;
         faseNastroB=1;
-    break;
+      break;
     default:
       faseNastroB=1;
   }
@@ -188,7 +191,7 @@ void MarciaNastroA()
 
   if(letturaFtc1NastroA && !valorePrecedenteFtc1NastroA)
   {
-    delay(1000);
+    delay(1000);//fare il fronte
     digital_outputs.set(motore1NastroA,HIGH);
   }
 
@@ -211,110 +214,110 @@ void MarciaNastroB()
   {
     digital_outputs.set(motore1NastroA,LOW);
   }
+}
 
-  int LetturaColoreNastroB(float valoreAnalogico)
+int LetturaColoreNastroB(float valoreAnalogico)
+{
+  int valRitorno=0;
+
+  if(!(valoreAnalogico >= 1.46 &&  valoreAnalogico <= 1.53))
   {
-    int valRitorno=0;
-
-    if(!(valoreAnalogico >= 1.46 &&  valoreAnalogico <= 1.53))
-    {
     abilitazione=true;
-    }
-    else
-    {
-      abilitazione=false;
-    }
-
-    if(abilitazione)
-    {
-      if(valoreAnalogico<=valMinimo)
-      {
-        valMinimo=valoreAnalogico;
-      }
-    }
-    if(valMinimo!=100 & abilitazione==false)
-    {
-      if(valMinimo>=1.25 && valMinimo<=1.40) 
-      {
-        valRitorno=1;//Rosso
-      }
-      if(valMinimo>=0.7 && valMinimo<=0.8)
-      {
-        valRitorno=2; //Bianco
-      }
-      if(valMinimo>=1.38 && valMinimo<=1.42)
-      {
-        valRitorno=3;//Blue
-      }
-      valMinimo=100;
-    }
-    return valRitorno;
+  }
+  else
+  {
+    abilitazione=false;
   }
 
-  void Espulsione(int codiceColore)
+  if(abilitazione)
   {
-    switch (codiceColore)
+    if(valoreAnalogico<=valMinimo)
     {
-      case 1:
-        delay(50);
-        digital_outputs.set(pistoneRossoNastroB,HIGH);
-        delay(500);
-        digital_outputs.set(pistoneRossoNastroB,LOW);
-        count=0;
-        break;
+      valMinimo=valoreAnalogico;
+    }
+  }
+  if(valMinimo!=100 & abilitazione==false)
+  {
+    if(valMinimo>=1.25 && valMinimo<=1.40) 
+    {
+      valRitorno=1;//Rosso
+    }
+    if(valMinimo>=0.7 && valMinimo<=0.8)
+    {
+      valRitorno=2; //Bianco
+    }
+    if(valMinimo>=1.38 && valMinimo<=1.42)
+    {
+      valRitorno=3;//Blue
+    }
+    valMinimo=100;
+  }
+  return valRitorno;
+}
+
+void Espulsione(int codiceColore)
+{
+  switch (codiceColore)
+  {
+    case 1:
+      delay(50);
+      digital_outputs.set(pistoneRossoNastroB,HIGH);
+      delay(500);
+      digital_outputs.set(pistoneRossoNastroB,LOW);
+      count=0;
+      break;
       
-      case 2:
-        delay(50);
-        digital_outputs.set(pistoneBiancoNastroB,HIGH);
-        delay(500);
-        digital_outputs.set(pistoneBiancoNastroB,LOW);
-        count=0;
-        break;
+    case 2:
+      delay(50);
+      digital_outputs.set(pistoneBiancoNastroB,HIGH);
+      delay(500);
+      digital_outputs.set(pistoneBiancoNastroB,LOW);
+      count=0;
+      break;
       
-      case 3:
-        delay(50);
-        digital_outputs.set(pistoneBluNastroB,HIGH);
-        delay(500);
-        digital_outputs.set(pistoneBluNastroB,LOW);
-        count=0;
-        break;
-    }
+    case 3:
+      delay(50);
+      digital_outputs.set(pistoneBluNastroB,HIGH);
+      delay(500);
+      digital_outputs.set(pistoneBluNastroB,LOW);
+      count=0;
+      break;
   }
+}
 
-  bool Conteggio()
+bool Conteggio()
+{
+  bool letturaEncoder2NastroB=digital_inputs.read(encoder2NastroB);
+
+  if(letturaEncoder2NastroB && !valorePrecedenteEncoder2NastroB)
   {
-    bool letturaEncoder2NastroB=digital_inputs.read(encoder2NastroB);
-
-    if(letturaEncoder2NastroB && !valorePrecedenteEncoder2NastroB)
-    {
-      count++;
-      return true;
-    }
-    else
-    {
-      if(!letturaEncoder2NastroB && valorePrecedenteEncoder2NastroB)
-      {
-      return false;
-      }
-    }
-    valorePrecedenteEncoder2NastroB=letturaEncoder2NastroB;
+    count++;
+    return true;
   }
-
-  bool PresenzaPezzo()
+  else
   {
-    bool letturaFtc4NastroB=digital_inputs.read(ftc4NastroB);
-
-    if(letturaFtc4NastroB && !valorePrecedenteFtc4NastroB)
+    if(!letturaEncoder2NastroB && valorePrecedenteEncoder2NastroB)
     {
-      return true;
+    return false;
     }
-    else
-    {
-      if(!letturaFtc4NastroB && valorePrecedenteFtc4NastroB)
-      {
-      return false;
-      }
-    }
-    valorePrecedenteFtc4NastroB=letturaFtc4NastroB;
   }
+  valorePrecedenteEncoder2NastroB=letturaEncoder2NastroB;
+}
+
+bool PresenzaPezzo()
+{
+  bool letturaFtc4NastroB=digital_inputs.read(ftc4NastroB);
+
+  if(letturaFtc4NastroB && !valorePrecedenteFtc4NastroB)
+  {
+    return true;
+  }
+  else
+  {
+    if(!letturaFtc4NastroB && valorePrecedenteFtc4NastroB)
+    {
+    return false;
+    }
+  }
+  valorePrecedenteFtc4NastroB=letturaFtc4NastroB;
 }
