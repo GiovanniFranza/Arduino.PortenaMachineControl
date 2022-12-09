@@ -118,6 +118,14 @@ void NastroB()
       {
         pezzoProntoEsplusione=true;
         pezzoOutSensorColor=false;
+        faseNastroB=4;
+      }
+      else
+      {
+        faseNastroB=1;
+      }
+      break;
+    case 4:
         if(pezzoProntoEsplusione==true)
         {
           switch(valoreLettoColore)
@@ -127,7 +135,7 @@ void NastroB()
               {
                 if(count==3)
                 {
-                  faseNastroB=4;
+                  faseNastroB=5;
                 }
               }
               break;
@@ -136,7 +144,7 @@ void NastroB()
               {
                 if(count==9)
                 {
-                  faseNastroB=4;
+                  faseNastroB=5;
                 }
               }
               break;
@@ -145,7 +153,7 @@ void NastroB()
               {
                 if(count==15)
                 {
-                  faseNastroB=4;
+                  faseNastroB=5;
                 }
               }
             break;
@@ -153,13 +161,13 @@ void NastroB()
             faseNastroB=1;
           }
         }
-      }
-      else
-      {
-        pezzoProntoEsplusione=false;
-        faseNastroB=1;
-      }
-    case 4:
+        else
+        {
+          pezzoProntoEsplusione=false;
+          faseNastroB=1;
+        }
+      break;
+    case 5:
       Espulsione(valoreLettoColore);
         pezzoProntoEsplusione=false;
         faseNastroB=1;
@@ -284,9 +292,9 @@ bool Conteggio()
   {
     //if(!letturaEncoder2NastroB && valorePrecedenteEncoder2NastroB)
     //{
-      //return false;
+    valorePrecedenteEncoder2NastroB=letturaEncoder2NastroB;
+    return false;
     //}
-   valorePrecedenteEncoder2NastroB=letturaEncoder2NastroB;
   }
   valorePrecedenteEncoder2NastroB=letturaEncoder2NastroB;
 }
@@ -301,10 +309,11 @@ bool PresenzaPezzo()
   }
   else
   {
-    if(!ftc4NastroB && valorePrecedenteFtc4NastroB)
-    {
-      return false;
-    }
+    //if(!ftc4NastroB && valorePrecedenteFtc4NastroB)
+    //{
+    valorePrecedenteFtc4NastroB=ftc4NastroB;
+    return false;
+    //}
   }
   valorePrecedenteFtc4NastroB=ftc4NastroB;
 }
