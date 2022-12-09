@@ -102,7 +102,7 @@ void NastroB()
     case 2:
       if(pezzoOutSensorColor==true)
       {
-        pezzoProntoEspulsione=PresenzaPezzo();
+        pezzoProntoEsplusione=PresenzaPezzo();
         pezzoOutSensorColor=false;
         faseNastroB=3;
       }
@@ -112,7 +112,7 @@ void NastroB()
       }
       break;    
     case 3:
-      if(pezzoProntoEspulsione==true)
+      if(pezzoProntoEsplusione==true)
       {
         switch(valoreLettoColore)
         {
@@ -149,12 +149,12 @@ void NastroB()
       }
       else
       {
-        pezzoProntoEspulsione=false;
+        pezzoProntoEsplusione=false;
         faseNastroB=1;
       }
     case 4:
       Espulsione(valoreLettoColore);
-        pezzoProntoEspulsione=false;
+        pezzoProntoEsplusione=false;
         faseNastroB=1;
       break;
     default:
@@ -274,7 +274,7 @@ void Espulsione(int codiceColore)
 
 bool Conteggio()
 {
-  bool letturaEncoder2NastroB=!digital_inputs.read(encoder2NastroB);
+  bool letturaEncoder2NastroB=digital_inputs.read(encoder2NastroB);
 
   if(letturaEncoder2NastroB && !valorePrecedenteEncoder2NastroB)
   {
@@ -293,7 +293,7 @@ bool Conteggio()
 
 bool PresenzaPezzo()
 {
-  bool valorePrecedenteFtc4NastroB=!digital_inputs.read(ftc4NastroB);
+  bool valorePrecedenteFtc4NastroB=digital_inputs.read(ftc4NastroB);
 
   if(ftc4NastroB && !valorePrecedenteFtc4NastroB)
   {
