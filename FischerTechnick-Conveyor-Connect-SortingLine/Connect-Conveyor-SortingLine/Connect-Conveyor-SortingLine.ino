@@ -7,8 +7,8 @@ using namespace machinecontrol;
 
 //INGRESSI
 int encoder1NastroA=DIN_READ_CH_PIN_00;
-int ftc1NastroA=DIN_READ_CH_PIN_01;
-int ftc2NastroA=DIN_READ_CH_PIN_02;
+int ftc2NastroA=DIN_READ_CH_PIN_01;
+int ftc1NastroA=DIN_READ_CH_PIN_02;
 int encoder2NastroB=DIN_READ_CH_PIN_03;
 int ftc3NastroB=DIN_READ_CH_PIN_04;
 int ftc4NastroB=DIN_READ_CH_PIN_05;
@@ -183,7 +183,7 @@ void MarciaNastroA()
     }
   }
 
-  valorePrecedenteFtc1NastroA=letturaFtc1NastroA
+  valorePrecedenteFtc1NastroA=letturaFtc1NastroA;
 
   if(letturaFtc2NastroA && !valorePrecedenteFtc2NastroA)
   {
@@ -191,18 +191,18 @@ void MarciaNastroA()
   }
   else
   {
-    if(!etturaFtc2NastroA && valorePrecedenteFtc2NastroA)
+    if(!letturaFtc2NastroA && valorePrecedenteFtc2NastroA)
     {
       Serial.println("Il Pezzo non è uscito");
     }
   }
-  valorePrecedenteFtc2NastroA=etturaFtc2NastroA;
+  valorePrecedenteFtc2NastroA=letturaFtc2NastroA;
 }
 
 void MarciaNastroB()
 {
   //VARIABILI CHE SERVONO ALLA FUNZIONE
-  bool letturaFtc3NastroB=digital_inputs.read(ftc3NastroB);
+  bool letturaFtc3NastroB=!digital_inputs.read(ftc3NastroB);
 
   if(letturaFtc3NastroB == 1 && letturaFtc2NastroA==0)
   {
