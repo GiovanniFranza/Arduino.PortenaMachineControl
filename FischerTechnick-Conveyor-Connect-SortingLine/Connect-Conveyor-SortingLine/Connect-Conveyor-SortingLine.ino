@@ -105,7 +105,7 @@ void NastroB()
     case 2:
       if(pezzoOutSensorColor==true)
       {
-        pezzoProntoEsplusione=PresenzaPezzo();
+        //pezzoProntoEsplusione=PresenzaPezzo();
         faseNastroB=3;
       }
       else
@@ -114,40 +114,44 @@ void NastroB()
       }
       break;    
     case 3:
-      if(pezzoProntoEsplusione==true)
+      if(PresenzaPezzo())
       {
+        pezzoProntoEsplusione=true;
         pezzoOutSensorColor=false;
-        switch(valoreLettoColore)
+        if(pezzoProntoEsplusione==true)
         {
-          case 1:
-            if(Conteggio())
-            {
-              if(count==3)
+          switch(valoreLettoColore)
+          {
+            case 1:
+              if(Conteggio())
               {
-                faseNastroB=4;
+                if(count==3)
+                {
+                  faseNastroB=4;
+                }
               }
-            }
+              break;
+            case 2:
+              if(Conteggio())
+              {
+                if(count==9)
+                {
+                  faseNastroB=4;
+                }
+              }
+              break;
+            case 3:
+              if(Conteggio())
+              {
+                if(count==15)
+                {
+                  faseNastroB=4;
+                }
+              }
             break;
-          case 2:
-            if(Conteggio())
-            {
-              if(count==9)
-              {
-                faseNastroB=4;
-              }
-            }
-            break;
-          case 3:
-            if(Conteggio())
-            {
-              if(count==15)
-              {
-                faseNastroB=4;
-              }
-            }
-          break;
-        default:
-          faseNastroB=1;
+          default:
+            faseNastroB=1;
+          }
         }
       }
       else
