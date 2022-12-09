@@ -290,30 +290,28 @@ bool Conteggio()
   }
   else
   {
-    //if(!letturaEncoder2NastroB && valorePrecedenteEncoder2NastroB)
-    //{
-    valorePrecedenteEncoder2NastroB=letturaEncoder2NastroB;
+    if(!letturaEncoder2NastroB && valorePrecedenteEncoder2NastroB)
+    {
     return false;
-    //}
+    }
   }
   valorePrecedenteEncoder2NastroB=letturaEncoder2NastroB;
 }
 
 bool PresenzaPezzo()
 {
-  bool valorePrecedenteFtc4NastroB=!digital_inputs.read(ftc4NastroB);
+  bool letturaFtc4NastroB=digital_inputs.read(ftc4NastroB);
 
-  if(ftc4NastroB && !valorePrecedenteFtc4NastroB)
+  if(letturaFtc4NastroB && !valorePrecedenteFtc4NastroB)
   {
     return true;
   }
   else
   {
-    //if(!ftc4NastroB && valorePrecedenteFtc4NastroB)
-    //{
-    valorePrecedenteFtc4NastroB=ftc4NastroB;
+    if(!letturaFtc4NastroB && valorePrecedenteFtc4NastroB)
+    {
     return false;
-    //}
+    }
   }
-  valorePrecedenteFtc4NastroB=ftc4NastroB;
+  valorePrecedenteFtc4NastroB=letturaFtc4NastroB;
 }
