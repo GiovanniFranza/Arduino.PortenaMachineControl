@@ -51,7 +51,7 @@ void setup()
   abilitazione=false;
   letturaFtc2NastroA;
   count=0;
-  faseNastroB=0;
+  faseNastroB=1;
 
   analogReadResolution(16);
   analog_in.set0_10V();
@@ -89,23 +89,23 @@ void NastroB()
   //TUTTE LE FUNZIONE NASTROB
   MarciaNastroB();
 
-  raw_voltage_ch0 = analog_in.read(0);
-  voltage_ch0 = (raw_voltage_ch0 * reference) / 65535 / res_divider;
-
   switch(faseNastroB)
   {
     case 1:
+      raw_voltage_ch0 = analog_in.read(0);
+      voltage_ch0 = (raw_voltage_ch0 * reference) / 65535 / res_divider;
       valoreLettoColore=LetturaColoreNastroB(voltage_ch0);
+      Serial.println(valoreLettoColore);
       if(valoreLettoColore!=0)
       {
         pezzoOutSensorColor=true;
+        faseNastroB=2;
       }
       break;
     case 2:
       if(pezzoOutSensorColor==true)
       {
         pezzoProntoEsplusione=PresenzaPezzo();
-        pezzoOutSensorColor=false;
         faseNastroB=3;
       }
       else
@@ -116,6 +116,7 @@ void NastroB()
     case 3:
       if(pezzoProntoEsplusione==true)
       {
+        pezzoOutSensorColor=false;
         switch(valoreLettoColore)
         {
           case 1:
@@ -175,13 +176,6 @@ void MarciaNastroA()
     delay(1000);//fare il fronte
     digital_outputs.set(motore1NastroA,HIGH);
   }
-  else
-  {
-    if(!letturaFtc1NastroA && valorePrecedenteFtc1NastroA)
-    {
-      Serial.println("Inserire Pezzo in Ingresso");
-    }
-  }
 
   valorePrecedenteFtc1NastroA=letturaFtc1NastroA;
 
@@ -189,13 +183,7 @@ void MarciaNastroA()
   {
     digital_outputs.set(motore2NastroB,HIGH);
   }
-  else
-  {
-    if(!letturaFtc2NastroA && valorePrecedenteFtc2NastroA)
-    {
-      Serial.println("Il Pezzo non è uscito");
-    }
-  }
+
   valorePrecedenteFtc2NastroA=letturaFtc2NastroA;
 }
 
@@ -204,13 +192,9 @@ void MarciaNastroB()
   //VARIABILI CHE SERVONO ALLA FUNZIONE
   bool letturaFtc3NastroB=!digital_inputs.read(ftc3NastroB);
 
-  if(letturaFtc3NastroB == 1 && letturaFtc2NastroA==0)
+  if(letturaFtc3NastroB == 1)
   {
     digital_outputs.set(motore1NastroA,LOW);
-  }
-  else
-  {
-    Serial.println("Il Pezzo non è ancora arrivato al NastroB");
   }
 }
 
@@ -294,17 +278,18 @@ bool Conteggio()
   }
   else
   {
-    if(!letturaEncoder2NastroB && valorePrecedenteEncoder2NastroB)
-    {
-      return false;
-    }
+    //if(!letturaEncoder2NastroB && valorePrecedenteEncoder2NastroB)
+    //{
+      //return false;
+    //}
+   valorePrecedenteEncoder2NastroB=letturaEncoder2NastroB;
   }
   valorePrecedenteEncoder2NastroB=letturaEncoder2NastroB;
 }
 
 bool PresenzaPezzo()
 {
-  bool valorePrecedenteFtc4NastroB=digital_inputs.read(ftc4NastroB);
+  bool valorePrecedenteFtc4NastroB=!digital_inputs.read(ftc4NastroB);
 
   if(ftc4NastroB && !valorePrecedenteFtc4NastroB)
   {
@@ -318,5 +303,4 @@ bool PresenzaPezzo()
     }
   }
   valorePrecedenteFtc4NastroB=ftc4NastroB;
-
 }
