@@ -127,6 +127,8 @@ void NastroB()
                 if(count==9)
                 {
                   faseNastroB=5;
+                  delay(1000);
+                  digital_outputs.set(motore2NastroB,LOW);
                   pezzoProntoEsplusione=false;
                 }
               }
@@ -137,6 +139,8 @@ void NastroB()
                 if(count==3)
                 {
                   faseNastroB=5;
+                  delay(1000);
+                  digital_outputs.set(motore2NastroB,LOW);
                   pezzoProntoEsplusione=false;
                 }
               }
@@ -147,6 +151,8 @@ void NastroB()
                 if(count==16)
                 {
                   faseNastroB=5;
+                  delay(1000);
+                  digital_outputs.set(motore2NastroB,LOW);
                   pezzoProntoEsplusione=false;
                 }
               }
