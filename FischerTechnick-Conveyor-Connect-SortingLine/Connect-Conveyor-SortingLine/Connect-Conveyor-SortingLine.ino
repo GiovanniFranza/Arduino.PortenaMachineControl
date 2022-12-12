@@ -43,6 +43,8 @@ void setup()
 {
 
   //INIZIALIZZAZIONE VARIABILI
+  valorePrecedenteEncoder2NastroB=1;
+  valorePrecedenteFtc4NastroB=1;
   res_divider = 1.5;
   reference = 3.3;
   raw_voltage_ch0=0;
@@ -70,7 +72,7 @@ void setup()
 void loop() 
 {
   AzionamentoCompressore();
-  //NastroA();
+  NastroA();
   NastroB();
 }
 
@@ -79,13 +81,11 @@ void AzionamentoCompressore()
   digital_outputs.set(compressoreNastroB,HIGH);
 }
 
-/*
 void NastroA()
 {
   //TUTTE LE FUNZIONI NASTROA 
-  MarciaNastroA();
+    MarciaNastroA();
 }
-*/
 void NastroB()
 {
   //TUTTE LE FUNZIONE NASTROB
@@ -97,35 +97,22 @@ void NastroB()
       raw_voltage_ch0 = analog_in.read(0);
       voltage_ch0 = (raw_voltage_ch0 * reference) / 65535 / res_divider;
       valoreLettoColore=LetturaColoreNastroB(voltage_ch0);
-      Serial.println(valoreLettoColore);
       if(valoreLettoColore!=0)
       {
-        pezzoOutSensorColor=true;
         faseNastroB=2;
       }
       break;
     case 2:
-    Serial.println("Prova1");
-      if(pezzoOutSensorColor==true)
-      {
-        //pezzoProntoEsplusione=PresenzaPezzo();
-        faseNastroB=3;
-      }
-      else
-      {
-        faseNastroB=1;
-      }
-      break;    
-    case 3:
-    Serial.println("Prova2");
       if(PresenzaPezzo())
       {
         pezzoProntoEsplusione=true;
-        faseNastroB=4;
+        faseNastroB=3;
       }
-      else
+      break;    
+    case 3:
+      if(pezzoProntoEsplusione==true)
       {
-        faseNastroB=1;
+        faseNastroB=4;
       }
       break;
     case 4:
@@ -140,6 +127,7 @@ void NastroB()
                 if(count==9)
                 {
                   faseNastroB=5;
+                  pezzoProntoEsplusione=false;
                 }
               }
               break;
@@ -149,15 +137,17 @@ void NastroB()
                 if(count==3)
                 {
                   faseNastroB=5;
+                  pezzoProntoEsplusione=false;
                 }
               }
               break;
             case 3:
               if(Conteggio())
               {
-                if(count==15)
+                if(count==16)
                 {
                   faseNastroB=5;
+                  pezzoProntoEsplusione=false;
                 }
               }
             break;
@@ -168,13 +158,12 @@ void NastroB()
         else
         {
           pezzoProntoEsplusione=false;
-          faseNastroB=1;
+          faseNastroB=3;
         }
       break;
     case 5:
       Espulsione(valoreLettoColore);
         pezzoProntoEsplusione=false;
-        pezzoOutSensorColor=false;
         faseNastroB=1;
       break;
     default:
@@ -182,16 +171,15 @@ void NastroB()
   }
 }
 
-/*
+
 void MarciaNastroA()
 {
-  //VARIABILI CHE SERVONO ALLA FUNZIONE
   bool letturaFtc1NastroA=!digital_inputs.read(ftc1NastroA);
   letturaFtc2NastroA=!digital_inputs.read(ftc2NastroA);
 
   if(letturaFtc1NastroA && !valorePrecedenteFtc1NastroA)
   {
-    delay(1000);//fare il fronte
+    delay(1000);
     digital_outputs.set(motore1NastroA,HIGH);
   }
 
@@ -204,15 +192,14 @@ void MarciaNastroA()
 
   valorePrecedenteFtc2NastroA=letturaFtc2NastroA;
 }
-*/
+
 void MarciaNastroB()
 {
-  //VARIABILI CHE SERVONO ALLA FUNZIONE
   bool letturaFtc3NastroB=!digital_inputs.read(ftc3NastroB);
 
   if(letturaFtc3NastroB == 1)
   {
-    digital_outputs.set(motore2NastroB,HIGH);
+    digital_outputs.set(motore1NastroA,LOW);
   }
 }
 
@@ -287,37 +274,33 @@ void Espulsione(int codiceColore)
 
 bool Conteggio()
 {
-  bool letturaEncoder2NastroB=digital_inputs.read(encoder2NastroB);
+  bool letturaEncoder2NastroB=!digital_inputs.read(encoder2NastroB);
 
-  if(letturaEncoder2NastroB && !valorePrecedenteEncoder2NastroB)
+  if((letturaEncoder2NastroB != valorePrecedenteEncoder2NastroB) && letturaEncoder2NastroB==LOW)
   {
+    valorePrecedenteEncoder2NastroB=letturaEncoder2NastroB;
     count++;
     return true;
   }
   else
   {
-    if(!letturaEncoder2NastroB && valorePrecedenteEncoder2NastroB)
-    {
+    valorePrecedenteEncoder2NastroB=letturaEncoder2NastroB;
     return false;
-    }
   }
-  valorePrecedenteEncoder2NastroB=letturaEncoder2NastroB;
 }
 
 bool PresenzaPezzo()
 {
   bool letturaFtc4NastroB=!digital_inputs.read(ftc4NastroB);
 
-  if(letturaFtc4NastroB && !valorePrecedenteFtc4NastroB)
+  if((letturaFtc4NastroB != valorePrecedenteFtc4NastroB) && letturaFtc4NastroB==HIGH)
   {
+    valorePrecedenteFtc4NastroB=letturaFtc4NastroB;
     return true;
   }
   else
   {
-    if(!letturaFtc4NastroB && valorePrecedenteFtc4NastroB)
-    {
+    valorePrecedenteFtc4NastroB=letturaFtc4NastroB;
     return false;
-    }
   }
-  valorePrecedenteFtc4NastroB=letturaFtc4NastroB;
 }
