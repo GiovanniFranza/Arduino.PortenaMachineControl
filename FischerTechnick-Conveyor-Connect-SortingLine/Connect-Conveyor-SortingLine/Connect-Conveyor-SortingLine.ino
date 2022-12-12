@@ -41,7 +41,6 @@ bool pezzoProntoEsplusione;
 
 void setup() 
 {
-
   //INIZIALIZZAZIONE VARIABILI
   valorePrecedenteEncoder2NastroB=1;
   valorePrecedenteFtc4NastroB=1;
@@ -83,9 +82,9 @@ void AzionamentoCompressore()
 
 void NastroA()
 {
-  //TUTTE LE FUNZIONI NASTROA 
     MarciaNastroA();
 }
+
 void NastroB()
 {
   //TUTTE LE FUNZIONE NASTROB
@@ -127,8 +126,6 @@ void NastroB()
                 if(count==9)
                 {
                   faseNastroB=5;
-                  delay(1000);
-                  digital_outputs.set(motore2NastroB,LOW);
                   pezzoProntoEsplusione=false;
                 }
               }
@@ -139,8 +136,6 @@ void NastroB()
                 if(count==3)
                 {
                   faseNastroB=5;
-                  delay(1000);
-                  digital_outputs.set(motore2NastroB,LOW);
                   pezzoProntoEsplusione=false;
                 }
               }
@@ -148,11 +143,9 @@ void NastroB()
             case 3:
               if(Conteggio())
               {
-                if(count==16)
+                if(count==15)
                 {
                   faseNastroB=5;
-                  delay(1000);
-                  digital_outputs.set(motore2NastroB,LOW);
                   pezzoProntoEsplusione=false;
                 }
               }
@@ -176,7 +169,6 @@ void NastroB()
       faseNastroB=1;
   }
 }
-
 
 void MarciaNastroA()
 {
