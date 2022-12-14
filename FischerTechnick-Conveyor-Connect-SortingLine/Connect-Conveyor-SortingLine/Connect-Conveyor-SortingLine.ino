@@ -143,7 +143,7 @@ void NastroB()
             case 3:
               if(Conteggio())
               {
-                if(count==15)
+                if(count==14)
                 {
                   faseNastroB=5;
                   pezzoProntoEsplusione=false;
