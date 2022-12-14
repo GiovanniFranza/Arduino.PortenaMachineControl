@@ -1,5 +1,6 @@
 #include <Arduino_MachineControl.h>
 #include <Wire.h>
+#include <Arduino.h>
 #define MAX 3
 using namespace machinecontrol;
 
@@ -15,8 +16,8 @@ int pistoneBluNastroB=5;
 bool letturaFtc2NastroA;
 int valoreLettoColore;
 bool valorePrecedenteFtc4NastroB;
-bool valorePrecedenteEncoder2NastroB;
 int count;
+bool valorePrecedenteEncoder2NastroB;
 int faseNastroB;
 bool pezzoOutSensorColor;
 bool pezzoProntoEsplusione;
@@ -61,17 +62,25 @@ void loop()
 {
   NastroB();
 
-  for(int i=0; i<MAX; i++)
+  raw_voltage_ch0 = analog_in.read(0);
+  voltage_ch0 = (raw_voltage_ch0 * reference) / 65535 / res_divider;
+  valoreLettoColore=LetturaColoreNastroB(voltage_ch0);
+
+  if(valoreLettoColore!=0)
   {
-    raw_voltage_ch0 = analog_in.read(0);
-    voltage_ch0 = (raw_voltage_ch0 * reference) / 65535 / res_divider;
-    valoreLettoColore=LetturaColoreNastroB(voltage_ch0);
-    vettore[i]=valoreLettoColore;
+    for(int i=0; i<MAX; i++)
+    {
+      vettore[i]=valoreLettoColore;
+      count++;
+    }
   }
 
-  for (int i=0; i<MAX; i++)
+  if(count==MAX)
   {
-    Serial.println(vettore[i]);
+    for (int i=0; i<MAX; i++)
+    {
+      Serial.println(vettore[i]);
+    }
   }  
 }
 
