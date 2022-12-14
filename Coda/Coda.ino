@@ -1,7 +1,7 @@
 #include <Arduino_MachineControl.h>
 #include <Wire.h>
 #include <Arduino.h>
-#define MAX 3
+#define MAX 2
 using namespace machinecontrol;
 
 int encoder2NastroB=DIN_READ_CH_PIN_03;
